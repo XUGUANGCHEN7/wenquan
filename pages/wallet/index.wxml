@@ -1,0 +1,30 @@
+<view class="page wallet-page">
+  <view class="wallet-card">
+    <text>当前储值余额</text>
+    <text class="balance"><text>¥</text>{{balance}}</text>
+    <text>可用于公共浴池门票、私汤房与园内点餐</text>
+    <view class="ring one" /><view class="ring two" />
+  </view>
+
+  <view class="section-head wallet-head">
+    <view><text class="en">RECHARGE BONUS</text><text class="title">选择储值金额</text></view>
+  </view>
+  <view class="plans">
+    <button wx:for="{{plans}}" wx:key="amount" class="{{selected === index ? 'active' : ''}}" data-index="{{index}}" bindtap="selectPlan">
+      <text wx:if="{{index === 1}}" class="popular">{{item.label}}</text>
+      <text>储值</text>
+      <text>¥{{item.amount}}</text>
+      <text>赠送 ¥{{item.gift}}</text>
+    </button>
+  </view>
+
+  <view class="benefits">
+    <text class="benefit-title">储值权益</text>
+    <view><text>01</text><view><text>全场通用</text><text>门票、私汤和园内点餐均可使用</text></view></view>
+    <view><text>02</text><view><text>支付更快捷</text><text>下单时可直接选择余额支付</text></view></view>
+    <view><text>03</text><view><text>余额有保障</text><text>储值和消费记录随时可查询</text></view></view>
+  </view>
+
+  <view class="agreement">充值即表示同意《蜀南温泉储值服务协议》</view>
+  <button class="recharge" bindtap="recharge">立即储值 ¥{{plans[selected].amount}}</button>
+</view>

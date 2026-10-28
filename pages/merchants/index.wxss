@@ -1,0 +1,28 @@
+.merchants-page { padding: 26rpx 30rpx 40rpx; background: #faf7f2; }
+.heading { display: flex; align-items: center; justify-content: space-between; }
+.heading view text { display: block; }
+.heading view text:first-child { color: #be6a37; font-size: 18rpx; letter-spacing: 4rpx; }
+.heading view text:last-child { margin-top: 4rpx; font-size: 44rpx; font-weight: 700; }
+.order { width: 74rpx; height: 74rpx; display: flex; align-items: center; justify-content: center; border: 1rpx solid #eadfd4; border-radius: 50%; color: #b9602e; background: white; font-size: 22rpx; }
+.location { min-height: 88rpx; margin: 26rpx 0 20rpx; padding: 0 22rpx; display: flex; align-items: center; gap: 14rpx; border: 1rpx solid #efd8c7; border-radius: 20rpx; color: #bd6633; background: #fff0e5; }
+.location > text:nth-child(2) { flex: 1; color: #956d55; font-size: 22rpx; }
+.location > text:nth-child(2) text { color: #a95528; font-weight: 600; }
+.categories { white-space: nowrap; }
+.categories button { height: 62rpx; margin-right: 14rpx; padding: 0 28rpx; display: inline-flex; align-items: center; justify-content: center; border: 1rpx solid #e1d8ce; border-radius: 31rpx; color: #777976; background: white; font-size: 22rpx; }
+.categories button.active { border-color: var(--orange); color: white; background: var(--orange); }
+.summary { margin: 28rpx 0 18rpx; display: flex; align-items: baseline; gap: 18rpx; }
+.summary text:first-child { font-size: 30rpx; font-weight: 650; }
+.summary text:last-child { color: #9b9d9a; font-size: 20rpx; }
+.merchant-list { display: grid; gap: 20rpx; }
+.merchant-card { min-height: 260rpx; display: grid; grid-template-columns: 250rpx 1fr; overflow: hidden; text-align: left; border: 1rpx solid #ece2d8; border-radius: 26rpx; background: white; box-shadow: 0 10rpx 30rpx rgba(74,58,46,.05); }
+.image-wrap { position: relative; }
+.image-wrap image { width: 100%; height: 100%; }
+.image-wrap text { position: absolute; top: 16rpx; left: 16rpx; padding: 8rpx 14rpx; border-radius: 20rpx; color: white; background: #3f957d; font-size: 19rpx; }
+.merchant-info { padding: 26rpx 22rpx; }
+.merchant-info > view { display: flex; align-items: center; justify-content: space-between; }
+.merchant-info > view text:first-child { font-size: 31rpx; font-weight: 650; }
+.merchant-info > view text:last-child { font-size: 36rpx; }
+.merchant-info > text { display: block; }
+.merchant-info > text:nth-child(2) { margin: 13rpx 0; color: #777a77; font-size: 23rpx; }
+.merchant-info > text:nth-child(3) { color: #a09f9b; font-size: 19rpx; }
+.merchant-info > text:last-child { width: fit-content; margin-top: 22rpx; padding: 8rpx 12rpx; border-radius: 8rpx; color: #c05f2b; background: #fff0e5; font-size: 19rpx; }

@@ -1,0 +1,41 @@
+.mine-page { background: #f5f2eb; }
+.mine-top { height: 440rpx; padding-top: env(safe-area-inset-top); color: white; background: radial-gradient(circle at 90% 20%,rgba(255,255,255,.15),transparent 30%),linear-gradient(145deg,#356f64,#244f48); }
+.status-space { height: 60rpx; }
+.profile { padding: 20rpx 38rpx 0; display: grid; grid-template-columns: auto 1fr auto; gap: 22rpx; align-items: center; }
+.avatar { width: 98rpx; height: 98rpx; display: flex; align-items: center; justify-content: center; border: 4rpx solid rgba(255,255,255,.35); border-radius: 50%; color: #285f55; background: #eee4ce; font: 36rpx "STSong",serif; }
+.profile view text { display: block; }
+.profile view text:first-child { font-size: 32rpx; font-weight: 650; }
+.profile view text:last-child { margin-top: 10rpx; font-size: 21rpx; opacity: .7; }
+.profile > text { font-size: 40rpx; }
+.progress { margin: 38rpx 38rpx 0; padding-top: 25rpx; border-top: 1rpx solid rgba(255,255,255,.12); }
+.progress > view:first-child { display: flex; justify-content: space-between; font-size: 21rpx; }
+.progress > view:first-child text:last-child { color: #dfc38d; font-weight: 650; }
+.progress > view:last-child { height: 8rpx; margin-top: 20rpx; overflow: hidden; border-radius: 4rpx; background: rgba(255,255,255,.14); }
+.progress > view:last-child text { width: 62%; height: 100%; display: block; border-radius: 4rpx; background: #d5b476; }
+.mine-content { position: relative; margin-top: -105rpx; padding: 0 30rpx 50rpx; }
+.balance-card { min-height: 350rpx; position: relative; padding: 34rpx; overflow: hidden; border-radius: 32rpx; color: #58431f; background: linear-gradient(135deg,#ead6a7,#c8a25e); box-shadow: 0 22rpx 50rpx rgba(107,82,37,.17); }
+.balance-card > view:first-child { position: relative; z-index: 1; display: flex; justify-content: space-between; font-size: 22rpx; font-weight: 650; }
+.balance-card > view:first-child text:last-child { font-size: 20rpx; font-weight: 400; }
+.amount { position: relative; z-index: 1; display: block; margin-top: 24rpx; font: 600 62rpx Georgia,serif; }
+.amount text { margin-right: 7rpx; font-size: 28rpx; }
+.balance-desc { position: relative; z-index: 1; display: block; margin: 12rpx 0 28rpx; font-size: 20rpx; opacity: .72; }
+.balance-card > button { width: 270rpx; height: 70rpx; position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; border-radius: 35rpx; color: #f4e5bf; background: #654f2c; font-size: 22rpx; font-weight: 650; }
+.ring { position: absolute; border: 1rpx solid rgba(255,255,255,.27); border-radius: 50%; }
+.ring-one { width: 270rpx; height: 270rpx; top: -100rpx; right: -50rpx; }
+.ring-two { width: 190rpx; height: 190rpx; right: 50rpx; bottom: -110rpx; }
+.white-card { margin-top: 22rpx; padding: 28rpx; border: 1rpx solid #e8e1d5; border-radius: 28rpx; background: white; }
+.card-head { display: flex; align-items: center; justify-content: space-between; }
+.card-head text:first-child { font-size: 28rpx; font-weight: 650; }
+.card-head text:last-child { color: #989e9a; font-size: 20rpx; }
+.order-grid { margin-top: 30rpx; display: grid; grid-template-columns: repeat(4,1fr); }
+.order-grid button { position: relative; display: flex; flex-direction: column; align-items: center; background: transparent; }
+.order-grid button > text:first-child { width: 70rpx; height: 70rpx; display: flex; align-items: center; justify-content: center; border-radius: 22rpx; color: #4f786e; background: #edf4f1; font: 600 24rpx "STSong",serif; }
+.order-grid button > text:nth-child(2) { margin-top: 13rpx; color: #59645f; font-size: 20rpx; }
+.order-grid .badge { width: 30rpx; height: 30rpx; position: absolute; top: -8rpx; right: 16rpx; display: flex; align-items: center; justify-content: center; border: 2rpx solid white; border-radius: 50%; color: white; background: #dd7040; font-size: 17rpx; }
+.services > button { width: 100%; min-height: 108rpx; display: grid; grid-template-columns: auto 1fr auto; gap: 20rpx; align-items: center; text-align: left; border-bottom: 1rpx solid #eee9e0; border-radius: 0; background: transparent; }
+.services > button:last-child { border-bottom: 0; }
+.service-icon { color: #4f786e; font: 600 25rpx "STSong",serif; }
+.services button view text { display: block; }
+.services button view text:first-child { font-size: 24rpx; font-weight: 600; }
+.services button view text:last-child { margin-top: 7rpx; color: #9b9f9c; font-size: 19rpx; }
+.services button > text:last-child { color: #919995; font-size: 34rpx; }

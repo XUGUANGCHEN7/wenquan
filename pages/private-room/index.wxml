@@ -1,0 +1,54 @@
+<view class="page private-page">
+  <view class="room-hero">
+    <image mode="aspectFill" src="{{rooms[roomIndex].image}}" />
+    <view class="shade" />
+    <view class="hero-copy">
+      <text>{{rooms[roomIndex].tag}} · PRIVATE ONSEN</text>
+      <text>{{rooms[roomIndex].name}}私汤房</text>
+      <text>独享一方汤池，安静度过两小时</text>
+    </view>
+  </view>
+
+  <view class="facilities">
+    <view><text>汤</text><text>独立汤池</text></view>
+    <view><text>憩</text><text>休息空间</text></view>
+    <view><text>餐</text><text>送餐到房</text></view>
+    <view><text>4</text><text>最多4人</text></view>
+  </view>
+
+  <view class="section-head room-head">
+    <view><text class="en">ROOM ENVIRONMENT</text><text class="title">房内环境</text></view>
+    <text class="more">左右滑动查看</text>
+  </view>
+  <scroll-view class="environment" scroll-x>
+    <image wx:for="{{environment}}" wx:key="*this" mode="aspectFill" src="{{item}}" />
+  </scroll-view>
+
+  <view class="section-head room-head">
+    <view><text class="en">ROOM TYPE</text><text class="title">选择房型</text></view>
+  </view>
+  <view class="room-options">
+    <button wx:for="{{rooms}}" wx:key="name" class="{{roomIndex === index ? 'active' : ''}}" data-index="{{index}}" bindtap="selectRoom">
+      <text>{{item.name}}房</text><text>{{item.tag}}</text><text>¥{{item.price}}</text>
+    </button>
+  </view>
+
+  <view class="booking-card">
+    <picker range="{{dates}}" value="{{dateIndex}}" bindchange="selectDate">
+      <view><text class="label">到店日期</text><text>{{dates[dateIndex]}}</text><text>›</text></view>
+    </picker>
+    <picker range="{{slots}}" value="{{slotIndex}}" bindchange="selectSlot">
+      <view><text class="label">使用时段</text><text>{{slots[slotIndex]}}</text><text>›</text></view>
+    </picker>
+  </view>
+
+  <view class="notice">
+    <text>预约说明</text>
+    <text>房费包含2小时私汤使用；超时需按现场标准补缴。可在使用时段开始前2小时申请退款。</text>
+  </view>
+
+  <view class="private-bottom">
+    <view><text>2小时房费</text><text><text>¥</text>{{rooms[roomIndex].price}}</text></view>
+    <button bindtap="submit">立即预约</button>
+  </view>
+</view>
