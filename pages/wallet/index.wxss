@@ -1,0 +1,29 @@
+.wallet-page { padding: 30rpx 30rpx 160rpx; }
+.wallet-card { min-height: 340rpx; position: relative; padding: 40rpx; overflow: hidden; border-radius: 34rpx; color: #58431f; background: linear-gradient(135deg,#ead6a7,#c29a55); box-shadow: 0 22rpx 50rpx rgba(107,82,37,.17); }
+.wallet-card > text { position: relative; z-index: 1; display: block; }
+.wallet-card > text:first-child { font-size: 23rpx; font-weight: 650; }
+.wallet-card .balance { margin: 30rpx 0 20rpx; font: 600 72rpx Georgia,serif; }
+.wallet-card .balance text { display: inline; margin-right: 8rpx; font-size: 30rpx; }
+.wallet-card > text:nth-child(3) { font-size: 21rpx; opacity: .72; }
+.ring { position: absolute; border: 1rpx solid rgba(255,255,255,.3); border-radius: 50%; }
+.ring.one { width: 300rpx; height: 300rpx; top: -130rpx; right: -70rpx; }
+.ring.two { width: 200rpx; height: 200rpx; right: 70rpx; bottom: -130rpx; }
+.wallet-head { margin-inline: 0; }
+.plans { display: grid; grid-template-columns: repeat(3,1fr); gap: 15rpx; }
+.plans button { min-height: 220rpx; position: relative; padding: 26rpx 10rpx; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1rpx solid #ded4c2; border-radius: 22rpx; color: #6b5e48; background: #fffdf8; }
+.plans button.active { border: 3rpx solid #ad8546; background: #f7edd9; }
+.plans button > text { display: block; }
+.plans button > text:nth-last-child(3) { font-size: 20rpx; }
+.plans button > text:nth-last-child(2) { margin: 12rpx 0; font-size: 36rpx; font-weight: 700; }
+.plans button > text:last-child { color: #a47531; font-size: 21rpx; }
+.plans .popular { position: absolute; top: -1rpx; right: -1rpx; left: -1rpx; padding: 8rpx; border-radius: 20rpx 20rpx 0 0; color: white; background: #a77e3e; font-size: 18rpx; }
+.benefits { margin-top: 34rpx; padding: 30rpx; border: 1rpx solid var(--line); border-radius: 26rpx; background: white; }
+.benefit-title { display: block; margin-bottom: 15rpx; font-size: 28rpx; font-weight: 650; }
+.benefits > view { min-height: 105rpx; display: grid; grid-template-columns: auto 1fr; gap: 20rpx; align-items: center; border-bottom: 1rpx solid #eee8dd; }
+.benefits > view:last-child { border-bottom: 0; }
+.benefits > view > text { width: 52rpx; height: 52rpx; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: #9a743c; background: #f3ead7; font: 22rpx Georgia,serif; }
+.benefits view view text { display: block; }
+.benefits view view text:first-child { font-size: 24rpx; font-weight: 600; }
+.benefits view view text:last-child { margin-top: 7rpx; color: #959b97; font-size: 20rpx; }
+.agreement { margin-top: 28rpx; color: #999d99; text-align: center; font-size: 20rpx; }
+.recharge { height: 94rpx; position: fixed; right: 30rpx; bottom: calc(24rpx + env(safe-area-inset-bottom)); left: 30rpx; z-index: 10; display: flex; align-items: center; justify-content: center; border-radius: 47rpx; color: #f8edcf; background: #6b5430; font-size: 29rpx; font-weight: 650; box-shadow: 0 14rpx 30rpx rgba(74,55,25,.2); }

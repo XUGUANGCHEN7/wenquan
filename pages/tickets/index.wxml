@@ -1,0 +1,49 @@
+<view class="page tickets-page">
+  <view class="ticket-intro">
+    <view>
+      <text class="en">PUBLIC BATH</text>
+      <text class="title">公共浴池入园票</text>
+      <text class="desc">露天汤池 · 室内汤池 · 休息大厅</text>
+    </view>
+    <image mode="aspectFill" src="https://images.unsplash.com/photo-1706189767508-8df45439f92c?auto=format&fit=crop&w=700&q=85" />
+  </view>
+
+  <view class="tips">购买成功后，将生成入园二维码。每张门票仅限一人使用。</view>
+
+  <view class="form-section">
+    <view class="step-head"><text>01</text><view><text>选择入园日期</text><text>周末及节假日价格略有调整</text></view></view>
+    <scroll-view class="dates" scroll-x>
+      <button wx:for="{{dates}}" wx:key="date" class="{{dateIndex === index ? 'active' : ''}}" data-index="{{index}}" bindtap="selectDate">
+        <text>{{item.label}}</text><text>{{item.date}}</text>
+      </button>
+    </scroll-view>
+  </view>
+
+  <view class="form-section">
+    <view class="step-head"><text>02</text><view><text>选择入园时段</text><text>入园后当日营业时间内有效</text></view></view>
+    <view class="slots">
+      <button wx:for="{{slots}}" wx:key="name" class="{{slotIndex === index ? 'active' : ''}}" data-index="{{index}}" bindtap="selectSlot">
+        <text class="radio"><text /></text>
+        <view><text class="slot-name">{{item.name}}</text><text class="slot-time">{{item.time}} · 余 {{item.left}}</text></view>
+        <text class="price">¥{{item.price}}</text>
+      </button>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="step-head"><text>03</text><view><text>选择购票人数</text><text>儿童票适用于身高 1.2—1.4 米</text></view></view>
+    <view class="guest">
+      <view><text>成人票</text><text>身高 1.4 米以上</text></view>
+      <view class="counter"><button data-type="adult" data-delta="-1" bindtap="changeCount">−</button><text>{{adult}}</text><button data-type="adult" data-delta="1" bindtap="changeCount">＋</button></view>
+    </view>
+    <view class="guest">
+      <view><text>儿童票</text><text>需由成人陪同入园</text></view>
+      <view class="counter"><button data-type="child" data-delta="-1" bindtap="changeCount">−</button><text>{{child}}</text><button data-type="child" data-delta="1" bindtap="changeCount">＋</button></view>
+    </view>
+  </view>
+
+  <view class="bottom-bar">
+    <view><text>合计</text><text class="total"><text>¥</text>{{total}}</text></view>
+    <button bindtap="submit">确认购票</button>
+  </view>
+</view>

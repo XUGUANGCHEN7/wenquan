@@ -1,0 +1,41 @@
+<view class="page mine-page">
+  <view class="mine-top">
+    <view class="status-space" />
+    <view class="profile">
+      <view class="avatar">蜀</view>
+      <view><text>{{nickname}}</text><text>普通会员 · 享受自然好时光</text></view>
+      <text>›</text>
+    </view>
+    <view class="progress">
+      <view><text>再储值 ¥200 升级银泉会员</text><text>查看权益</text></view>
+      <view><text /></view>
+    </view>
+  </view>
+
+  <view class="mine-content">
+    <view class="balance-card">
+      <view><text>储值余额</text><text bindtap="goWallet">余额明细　›</text></view>
+      <text class="amount"><text>¥</text>{{balance}}</text>
+      <text class="balance-desc">储值余额可用于门票、私汤与园内点餐</text>
+      <button bindtap="goWallet">进入储值中心</button>
+      <view class="ring ring-one" /><view class="ring ring-two" />
+    </view>
+
+    <view class="white-card">
+      <view class="card-head"><text>我的订单</text><text bindtap="showDeveloping">全部订单　›</text></view>
+      <view class="order-grid">
+        <button bindtap="showDeveloping"><text>票</text><text>门票订单</text><text class="badge">1</text></button>
+        <button bindtap="showDeveloping"><text>汤</text><text>私汤预约</text></button>
+        <button bindtap="showDeveloping"><text>餐</text><text>点餐订单</text></button>
+        <button bindtap="goWallet"><text>充</text><text>储值记录</text></button>
+      </view>
+    </view>
+
+    <view class="white-card services">
+      <view class="card-head"><text>常用服务</text></view>
+      <button bindtap="showDeveloping"><text class="service-icon">券</text><view><text>优惠与会员权益</text><text>2张可用优惠券</text></view><text>›</text></button>
+      <button bindtap="showDeveloping"><text class="service-icon">信</text><view><text>消息中心</text><text>订单与出餐提醒</text></view><text>›</text></button>
+      <button bindtap="showDeveloping"><text class="service-icon">客</text><view><text>联系客服</text><text>营业时间 09:00—22:00</text></view><text>›</text></button>
+    </view>
+  </view>
+</view>

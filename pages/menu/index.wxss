@@ -1,0 +1,41 @@
+.menu-page { height: 100vh; padding-bottom: 130rpx; overflow: hidden; background: #faf7f2; }
+.shop-head { height: 210rpx; padding: 35rpx 30rpx; color: white; background: linear-gradient(135deg,#7d4d30,#40362e); }
+.shop-head text { display: block; }
+.shop-head .en { font-size: 18rpx; letter-spacing: 4rpx; opacity: .65; }
+.shop-head .name { margin: 17rpx 0; font-size: 43rpx; font-weight: 650; }
+.shop-head .meta { font-size: 21rpx; opacity: .82; }
+.shop-head .meta text { display: inline; margin-right: 10rpx; padding: 6rpx 10rpx; border-radius: 8rpx; background: #3a9b7f; opacity: 1; }
+.delivery { height: 86rpx; padding: 0 28rpx; display: flex; align-items: center; gap: 14rpx; color: #b65e2e; background: #fff2e6; border-bottom: 1rpx solid #f2ddca; }
+.delivery > text:nth-child(2) { flex: 1; color: #6c543e; font-size: 22rpx; }
+.delivery > text:nth-child(2) text { color: #b65e2e; font-weight: 650; }
+.delivery > text:last-child { font-size: 21rpx; }
+.menu-content { height: calc(100vh - 426rpx); display: grid; grid-template-columns: 170rpx 1fr; }
+.category-side { height: 100%; background: #f1eee9; }
+.category-side button { width: 100%; height: 112rpx; border-radius: 0; color: #777b78; background: transparent; font-size: 23rpx; }
+.category-side button.active { position: relative; color: #bd5e29; background: #faf7f2; font-weight: 650; }
+.category-side button.active::before { width: 6rpx; height: 38rpx; position: absolute; left: 0; content: ""; border-radius: 0 6rpx 6rpx 0; background: var(--orange); }
+.products { height: 100%; padding: 25rpx 20rpx; }
+.product-head { margin-bottom: 26rpx; display: flex; align-items: baseline; gap: 15rpx; }
+.product-head text:first-child { font-size: 30rpx; font-weight: 650; }
+.product-head text:last-child { color: #a0a19f; font-size: 19rpx; }
+.product { min-height: 220rpx; margin-bottom: 26rpx; display: grid; grid-template-columns: 190rpx 1fr; gap: 18rpx; }
+.product > image { width: 190rpx; height: 190rpx; border-radius: 18rpx; }
+.product-info > text { display: block; }
+.product-info > text:first-child { font-size: 27rpx; font-weight: 650; }
+.product-info > text:nth-child(2) { margin: 10rpx 0; color: #92928f; font-size: 19rpx; line-height: 1.4; }
+.product-info > text:nth-child(3) { color: #b0a69e; font-size: 18rpx; }
+.product-bottom { margin-top: 25rpx; display: flex; align-items: center; justify-content: space-between; }
+.product-bottom > text { color: #e16e2d; font-size: 34rpx; font-weight: 700; }
+.product-bottom > text text { font-size: 20rpx; }
+.counter { display: flex; align-items: center; gap: 12rpx; }
+.counter button { width: 46rpx; height: 46rpx; display: flex; align-items: center; justify-content: center; border: 1rpx solid #e3a47d; border-radius: 50%; color: #dc6a29; background: white; }
+.counter button.plus { border: 0; color: white; background: var(--orange); }
+.counter > text { font-size: 23rpx; }
+.cart { min-height: 112rpx; position: fixed; right: 24rpx; bottom: calc(18rpx + env(safe-area-inset-bottom)); left: 24rpx; z-index: 10; padding: 12rpx 12rpx 12rpx 18rpx; display: grid; grid-template-columns: auto 1fr 230rpx; gap: 18rpx; align-items: center; border-radius: 56rpx; color: white; background: #303633; box-shadow: 0 18rpx 45rpx rgba(28,30,29,.25); }
+.bag { width: 82rpx; height: 82rpx; position: relative; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--orange); font-size: 24rpx; }
+.bag text { width: 32rpx; height: 32rpx; position: absolute; top: -5rpx; right: -5rpx; display: flex; align-items: center; justify-content: center; border: 3rpx solid #303633; border-radius: 50%; color: #e66f2c; background: #fff; font-size: 18rpx; font-weight: 700; }
+.cart > view:nth-child(2) text { display: block; }
+.cart > view:nth-child(2) text:first-child { font-size: 34rpx; font-weight: 700; }
+.cart > view:nth-child(2) text:last-child { margin-top: 6rpx; color: #b5bbb8; font-size: 17rpx; }
+.cart > button { height: 88rpx; border-radius: 44rpx; color: white; background: linear-gradient(135deg,#f49b52,#e96e2b); font-size: 27rpx; font-weight: 650; }
+.cart > button.disabled { opacity: .5; }

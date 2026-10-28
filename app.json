@@ -1,0 +1,41 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/tickets/index",
+    "pages/private-room/index",
+    "pages/merchants/index",
+    "pages/menu/index",
+    "pages/mine/index",
+    "pages/wallet/index"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#F7F4EC",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "蜀南温泉",
+    "backgroundColor": "#F7F4EC",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#929A96",
+    "selectedColor": "#3E8E7E",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/merchants/index",
+        "text": "点餐"
+      },
+      {
+        "pagePath": "pages/mine/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
+}

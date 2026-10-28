@@ -1,0 +1,37 @@
+<view class="page menu-page">
+  <view class="shop-head">
+    <text class="en">SHUNAN DINING</text>
+    <text class="name">{{name}}</text>
+    <text class="meta"><text>营业中</text> 10:30—21:00 · 园内可取餐</text>
+  </view>
+  <view class="delivery"><text>⌂</text><text>当前送至 <text>请选择取餐位置 / 私汤房</text></text><text>切换</text></view>
+  <view class="menu-content">
+    <scroll-view class="category-side" scroll-y>
+      <button wx:for="{{categories}}" wx:key="*this" class="{{categoryIndex === index ? 'active' : ''}}" data-index="{{index}}" bindtap="selectCategory">{{item}}</button>
+    </scroll-view>
+    <scroll-view class="products" scroll-y>
+      <view class="product-head"><text>{{categories[categoryIndex]}}</text><text>本店人气之选</text></view>
+      <view wx:for="{{products}}" wx:key="name" class="product">
+        <image mode="aspectFill" src="{{item.image}}" />
+        <view class="product-info">
+          <text>{{item.name}}</text>
+          <text>{{item.desc}}</text>
+          <text>月售 {{item.sold}}</text>
+          <view class="product-bottom">
+            <text><text>¥</text>{{item.price}}</text>
+            <view class="counter">
+              <button wx:if="{{counts[index] > 0}}" data-index="{{index}}" data-delta="-1" catchtap="changeCount">−</button>
+              <text wx:if="{{counts[index] > 0}}">{{counts[index]}}</text>
+              <button class="plus" data-index="{{index}}" data-delta="1" catchtap="changeCount">＋</button>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+  <view class="cart">
+    <view class="bag">袋<text wx:if="{{quantity}}">{{quantity}}</text></view>
+    <view><text>¥{{total}}</text><text>支持窗口自取或送至私汤房</text></view>
+    <button class="{{quantity ? '' : 'disabled'}}" bindtap="checkout">去结算</button>
+  </view>
+</view>

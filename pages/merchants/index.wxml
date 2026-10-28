@@ -1,0 +1,24 @@
+<view class="page merchants-page">
+  <view class="heading">
+    <view><text>SHUNAN DINING</text><text>园内点餐</text></view>
+    <text class="order">订单</text>
+  </view>
+  <view class="location">
+    <text>⌂</text><text>送至 <text>请选择取餐位置 / 私汤房</text></text><text>›</text>
+  </view>
+  <scroll-view class="categories" scroll-x>
+    <button wx:for="{{categories}}" wx:key="*this" class="{{categoryIndex === index ? 'active' : ''}}" data-index="{{index}}" bindtap="selectCategory">{{item}}</button>
+  </scroll-view>
+  <view class="summary"><text>{{categories[categoryIndex]}}</text><text>共 {{categoryIndex === 0 ? 3 : 1}} 家正在营业</text></view>
+  <view class="merchant-list">
+    <button wx:for="{{merchants}}" wx:key="id" class="merchant-card" data-index="{{index}}" bindtap="openMerchant">
+      <view class="image-wrap"><image mode="aspectFill" src="{{item.image}}" /><text>营业中</text></view>
+      <view class="merchant-info">
+        <view><text>{{item.name}}</text><text>›</text></view>
+        <text>{{item.desc}}</text>
+        <text>{{item.meta}}</text>
+        <text>{{item.tag}}</text>
+      </view>
+    </button>
+  </view>
+</view>
