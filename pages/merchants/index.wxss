@@ -14,13 +14,13 @@
 .summary text:first-child { font-size: 30rpx; font-weight: 650; }
 .summary text:last-child { color: #9b9d9a; font-size: 20rpx; }
 .merchant-list { display: grid; gap: 20rpx; }
-.merchant-card { min-height: 260rpx; display: grid; grid-template-columns: 250rpx 1fr; overflow: hidden; text-align: left; border: 1rpx solid #ece2d8; border-radius: 26rpx; background: white; box-shadow: 0 10rpx 30rpx rgba(74,58,46,.05); }
-.image-wrap { position: relative; }
-.image-wrap image { width: 100%; height: 100%; }
+.merchant-card { width: 100%; min-height: 260rpx; display: flex; align-items: stretch; overflow: hidden; text-align: left; border: 1rpx solid #ece2d8; border-radius: 26rpx; background: white; box-shadow: 0 10rpx 30rpx rgba(74,58,46,.05); }
+.image-wrap { position: relative; flex: 0 0 250rpx; overflow: hidden; }
+.image-wrap image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 .image-wrap text { position: absolute; top: 16rpx; left: 16rpx; padding: 8rpx 14rpx; border-radius: 20rpx; color: white; background: #3f957d; font-size: 19rpx; }
-.merchant-info { padding: 26rpx 22rpx; }
-.merchant-info > view { display: flex; align-items: center; justify-content: space-between; }
-.merchant-info > view text:first-child { font-size: 31rpx; font-weight: 650; }
+.merchant-info { flex: 1; min-width: 0; padding: 26rpx 22rpx; }
+.merchant-info > view { display: flex; align-items: center; justify-content: space-between; min-width: 0; }
+.merchant-info > view text:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 31rpx; font-weight: 650; }
 .merchant-info > view text:last-child { font-size: 36rpx; }
 .merchant-info > text { display: block; }
 .merchant-info > text:nth-child(2) { margin: 13rpx 0; color: #777a77; font-size: 23rpx; }

@@ -33,13 +33,23 @@
     </button>
   </view>
 
-  <view class="booking-card">
-    <picker range="{{dates}}" value="{{dateIndex}}" bindchange="selectDate">
-      <view><text class="label">到店日期</text><text>{{dates[dateIndex]}}</text><text>›</text></view>
-    </picker>
-    <picker range="{{slots}}" value="{{slotIndex}}" bindchange="selectSlot">
-      <view><text class="label">使用时段</text><text>{{slots[slotIndex]}}</text><text>›</text></view>
-    </picker>
+  <view class="section-head room-head">
+    <view><text class="en">BOOKING DATE</text><text class="title">选择到店日期</text></view>
+  </view>
+  <scroll-view class="pr-dates" scroll-x>
+    <button wx:for="{{dates}}" wx:key="date" class="{{dateIndex === index ? 'active' : ''}}" data-index="{{index}}" bindtap="selectDate">
+      <text>{{item.label}}</text><text>{{item.date}}</text>
+    </button>
+  </scroll-view>
+
+  <view class="section-head room-head">
+    <view><text class="en">TIME SLOT</text><text class="title">选择使用时段</text></view>
+  </view>
+  <view class="pr-slots">
+    <button wx:for="{{slots}}" wx:key="*this" class="{{slotIndex === index ? 'active' : ''}}" data-index="{{index}}" bindtap="selectSlot">
+      <text class="radio"><text /></text>
+      <text class="slot-time">{{item}}</text>
+    </button>
   </view>
 
   <view class="notice">
