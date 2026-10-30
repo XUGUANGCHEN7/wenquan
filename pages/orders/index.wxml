@@ -1,0 +1,21 @@
+<view class="page od-page">
+  <view wx:if="{{!entries.length}}" class="empty-card">
+    <text class="empty-title">暂无温泉订单</text>
+    <text class="empty-desc">购买门票或预约私汤房后，入园凭证会保存在这里，可随时重新打开</text>
+    <button class="home-btn" bindtap="goHome">去首页预订</button>
+  </view>
+
+  <view wx:for="{{entries}}" wx:key="no" class="entry-card">
+    <view class="ec-head">
+      <text class="ec-title">{{item.title}}</text>
+      <text class="ec-badge">待核验</text>
+    </view>
+    <view class="ec-row"><text>订单编号</text><text>{{item.no}}</text></view>
+    <view class="ec-row"><text>日期时段</text><text>{{item.date}} · {{item.slot}}</text></view>
+    <view class="ec-row" wx:if="{{item.type === 'ticket'}}"><text>购票人数</text><text>成人 {{item.adult}} 张 · 儿童 {{item.child}} 张</text></view>
+    <view class="ec-row" wx:if="{{item.type === 'room'}}"><text>预约房型</text><text>{{item.room}} 私汤房</text></view>
+    <view class="ec-row ec-amount"><text>金额</text><text>¥{{item.amount}}</text></view>
+    <button class="ec-btn" data-index="{{index}}" bindtap="viewPass">查看入园凭证</button>
+  </view>
+  <view class="safe-bottom" />
+</view>

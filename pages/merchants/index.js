@@ -43,6 +43,7 @@ Page({
     counts: [],
     quantity: 0,
     total: 0,
+    involvedCount: 0,
     cartName: "",
     fulfillment: "pickup",
     privateRoom: null
@@ -70,16 +71,34 @@ Page({
     this.setData({ fulfillment: mode })
   },
 
+  // 购物车总累计：跨商家合计金额、件数与涉及商家数
+  cartTotals() {
+    let quantity = 0
+    let total = 0
+    let involvedCount = 0
+    merchantMenus.forEach((m) => {
+      const counts = this.carts[m.id] || []
+      let merchantQty = 0
+      counts.forEach((count, i) => {
+        quantity += count
+        total += count * m.products[i].price
+        merchantQty += count
+      })
+      if (merchantQty > 0) involvedCount++
+    })
+    return { quantity, total, involvedCount }
+  },
+
   applyMerchant(index) {
     const merchant = merchantMenus[index]
     const counts = this.carts[merchant.id] || merchant.products.map(() => 0)
-    let quantity = 0
-    let total = 0
-    counts.forEach((count, i) => {
-      quantity += count
-      total += count * merchant.products[i].price
-    })
-    return { merchantIndex: index, products: merchant.products, counts, quantity, total, cartName: merchant.name }
+    return {
+      merchantIndex: index,
+      products: merchant.products,
+      counts,
+      cartName: merchant.name,
+      ...this.cartTotals()
+    }
   },
 
   selectMerchant(event) {
@@ -93,13 +112,11 @@ Page({
     const counts = [...this.data.counts]
     counts[index] = Math.max(0, counts[index] + delta)
     this.carts[merchant.id] = counts
-    let quantity = 0
-    let total = 0
-    counts.forEach((count, i) => {
-      quantity += count
-      total += count * this.data.products[i].price
-    })
-    this.setData({ counts, quantity, total })
+    this.setData({ counts, ...this.cartTotals() })
+  },
+
+  goOrders() {
+    wx.navigateTo({ url: "/pages/dining-orders/index" })
   },
 
   checkout() {
@@ -107,12 +124,23 @@ Page({
       wx.showToast({ title: "请先选择商品", icon: "none" })
       return
     }
-    const { quantity, total, cartName, merchantIndex, fulfillment, privateRoom } = this.data
-    const merchant = merchantMenus[merchantIndex]
+    const { quantity, total, involvedCount, fulfillment, privateRoom } = this.data
     const delivery = fulfillment === "delivery"
+    // 汇总每个有餐的商家及其菜品明细
+    const involved = []
+    merchantMenus.forEach((m) => {
+      const counts = this.carts[m.id] || []
+      const items = []
+      counts.forEach((count, i) => {
+        if (count > 0) {
+          items.push({ name: m.products[i].name, qty: count, subtotal: count * m.products[i].price })
+        }
+      })
+      if (items.length) involved.push({ merchant: m, items })
+    })
     wx.showModal({
       title: "确认支付",
-      content: `在${cartName}点购 ${quantity} 件商品，合计 ¥${total}，${delivery ? "由服务员送至私汤房" : "请到" + merchant.window + "取餐"}。当前为虚拟支付演示。`,
+      content: `${involvedCount > 1 ? involvedCount + " 家商家" : involved[0].merchant.name}共 ${quantity} 件商品，总累计 ¥${total}，${delivery ? "由服务员送至私汤房" : "请分别到各窗口取餐"}。当前为虚拟支付演示。`,
       confirmText: "虚拟支付",
       cancelText: "再想想",
       success: (res) => {
@@ -121,22 +149,24 @@ Page({
         setTimeout(() => {
           wx.hideLoading()
           const app = getApp()
-          const no = app.nextPickupNo()
-          // 订单入列：取餐页按窗口逐单展示，直到全部取完
-          app.globalData.pickupOrders.push({
-            id: "P" + Date.now(),
-            no,
-            window: merchant.window,
-            merchantName: cartName,
-            qty: quantity,
-            total,
-            fulfillment,
-            room: privateRoom ? privateRoom.room : "",
-            state: "making",
-            createdTs: Date.now()
+          // 一次支付，按商家拆单：每个商家一张取餐单（各自窗口号/取餐号）
+          involved.forEach(({ merchant, items }) => {
+            app.globalData.pickupOrders.push({
+              id: "P" + Date.now() + "_" + merchant.id,
+              no: app.nextPickupNo(),
+              window: merchant.window,
+              merchantName: merchant.name,
+              items,
+              qty: items.reduce((s, it) => s + it.qty, 0),
+              total: items.reduce((s, it) => s + it.subtotal, 0),
+              fulfillment,
+              room: privateRoom ? privateRoom.room : "",
+              state: "making",
+              createdTs: Date.now()
+            })
           })
-          this.carts[merchant.id] = merchant.products.map(() => 0)
-          this.setData(this.applyMerchant(merchantIndex))
+          this.carts = {}
+          this.setData(this.applyMerchant(this.data.merchantIndex))
           wx.navigateTo({ url: "/pages/pickup/index" })
         }, 900)
       }

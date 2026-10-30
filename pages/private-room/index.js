@@ -56,10 +56,22 @@ Page({
         wx.showLoading({ title: "支付中…", mask: true })
         setTimeout(() => {
           wx.hideLoading()
-          // 预约成功即解锁点餐页的"配送"权限（演示逻辑，真实环境由后端校验）
-          getApp().globalData.user.privateRoom = { room: room.name }
+          const app = getApp()
+          const no = app.nextEntryOrderNo()
+          // 预约成功即解锁点餐页的"配送"权限（演示逻辑，真实环境由后端校验），并存入温泉订单列表
+          app.globalData.user.privateRoom = { room: room.name }
+          app.globalData.entryOrders.unshift({
+            no,
+            type: "room",
+            title: "私汤房预约凭证",
+            room: room.name,
+            date: date.label + " " + date.date,
+            slot,
+            amount: room.price,
+            ts: Date.now()
+          })
           wx.navigateTo({
-            url: `/pages/entry-pass/index?type=room&room=${encodeURIComponent(room.name)}&date=${encodeURIComponent(date.label + " " + date.date)}&slot=${encodeURIComponent(slot)}&amount=${room.price}`
+            url: `/pages/entry-pass/index?no=${no}&type=room&room=${encodeURIComponent(room.name)}&date=${encodeURIComponent(date.label + " " + date.date)}&slot=${encodeURIComponent(slot)}&amount=${room.price}`
           })
         }, 900)
       }

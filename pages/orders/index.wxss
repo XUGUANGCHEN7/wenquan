@@ -1,0 +1,15 @@
+.od-page { padding: 30rpx 30rpx 60rpx; }
+.empty-card { padding: 90rpx 40rpx; border: 1rpx solid var(--line); border-radius: 28rpx; background: #fffdf8; text-align: center; }
+.empty-title { display: block; font: 600 34rpx "STSong", serif; color: #26342f; }
+.empty-desc { display: block; margin: 16rpx 0 36rpx; color: #8a938f; font-size: 22rpx; line-height: 1.6; }
+.home-btn { height: 92rpx; display: flex; align-items: center; justify-content: center; border: 1rpx solid var(--green); border-radius: 46rpx; color: var(--green); background: transparent; font-size: 30rpx; font-weight: 600; }
+.entry-card { margin-bottom: 24rpx; padding: 26rpx 28rpx; border: 1rpx solid var(--line); border-radius: 24rpx; background: #fffdf8; }
+.ec-head { display: flex; align-items: center; justify-content: space-between; padding-bottom: 16rpx; border-bottom: 1rpx dashed var(--line); }
+.ec-title { font: 600 30rpx "STSong", serif; color: #26342f; }
+.ec-badge { padding: 4rpx 16rpx; border-radius: 999rpx; color: #8a6d2f; background: #f3ead5; font-size: 20rpx; }
+.ec-row { min-height: 66rpx; display: flex; align-items: center; justify-content: space-between; }
+.ec-row text:first-child { color: #929995; font-size: 22rpx; }
+.ec-row text:last-child { color: #4a5651; font-size: 24rpx; font-weight: 600; }
+.ec-amount { border-top: 1rpx dashed var(--line); }
+.ec-amount text:last-child { color: #2f6e62; font-size: 30rpx; font-weight: 700; }
+.ec-btn { margin-top: 18rpx; height: 80rpx; display: flex; align-items: center; justify-content: center; border: 1rpx solid #aac6bd; border-radius: 40rpx; color: #327969; background: #fff; font-size: 26rpx; }

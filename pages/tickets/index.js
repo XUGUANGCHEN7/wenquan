@@ -55,8 +55,22 @@ Page({
         wx.showLoading({ title: "支付中…", mask: true })
         setTimeout(() => {
           wx.hideLoading()
+          const app = getApp()
+          const no = app.nextEntryOrderNo()
+          // 存入温泉订单列表，"我的-门票订单"可随时重开凭证
+          app.globalData.entryOrders.unshift({
+            no,
+            type: "ticket",
+            title: "公共浴池入园凭证",
+            date: date.label + " " + date.date,
+            slot: slot.name + " " + slot.time,
+            adult,
+            child,
+            amount: total,
+            ts: Date.now()
+          })
           wx.navigateTo({
-            url: `/pages/entry-pass/index?type=ticket&date=${encodeURIComponent(date.label + " " + date.date)}&slot=${encodeURIComponent(slot.name + " " + slot.time)}&adult=${adult}&child=${child}&amount=${total}`
+            url: `/pages/entry-pass/index?no=${no}&type=ticket&date=${encodeURIComponent(date.label + " " + date.date)}&slot=${encodeURIComponent(slot.name + " " + slot.time)}&adult=${adult}&child=${child}&amount=${total}`
           })
         }, 900)
       }

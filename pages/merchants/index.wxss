@@ -4,13 +4,12 @@
 .heading view text:first-child { color: #be6a37; font-size: 18rpx; letter-spacing: 4rpx; }
 .heading view text:last-child { margin-top: 4rpx; font-size: 44rpx; font-weight: 700; }
 .order { width: 74rpx; height: 74rpx; display: flex; align-items: center; justify-content: center; border: 1rpx solid #eadfd4; border-radius: 50%; color: #b9602e; background: white; font-size: 22rpx; }
-.head-right { display: flex; align-items: center; gap: 16rpx; }
-.fulfill-toggle { display: flex; padding: 4rpx; border: 1rpx solid #eadfd4; border-radius: 999rpx; background: white; }
+.location { min-height: 88rpx; margin: 20rpx 30rpx 0; padding: 0 22rpx; display: flex; align-items: center; gap: 14rpx; border: 1rpx solid #efd8c7; border-radius: 20rpx; color: #bd6633; background: #fff0e5; }
+.location .loc-text { flex: 1; color: #956d55; font-size: 22rpx; }
+.location .loc-text text { color: #a95528; font-weight: 600; }
+.fulfill-toggle { display: flex; margin-left: auto; flex-shrink: 0; padding: 4rpx; border: 1rpx solid #efd8c7; border-radius: 999rpx; background: white; }
 .fulfill-toggle text { padding: 8rpx 20rpx; border-radius: 999rpx; color: #b9602e; font-size: 22rpx; }
 .fulfill-toggle text.on { color: #fff; background: var(--orange); font-weight: 600; }
-.location { min-height: 88rpx; margin: 20rpx 30rpx 0; padding: 0 22rpx; display: flex; align-items: center; gap: 14rpx; border: 1rpx solid #efd8c7; border-radius: 20rpx; color: #bd6633; background: #fff0e5; }
-.location > text:nth-child(2) { flex: 1; color: #956d55; font-size: 22rpx; }
-.location > text:nth-child(2) text { color: #a95528; font-weight: 600; }
 
 .ordering { margin-top: 20rpx; height: calc(100vh - 350rpx); display: grid; grid-template-columns: 190rpx 1fr; }
 .merchant-side { height: 100%; background: #f1eee9; }

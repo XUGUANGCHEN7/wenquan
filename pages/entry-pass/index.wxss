@@ -7,14 +7,11 @@
 .order-line text { display: block; }
 .order-line text:first-child { color: #979d9a; font-size: 20rpx; }
 .order-line text:last-child { margin-top: 8rpx; font-size: 40rpx; font-weight: 700; color: #26342f; }
-.qr-box { width: 380rpx; height: 380rpx; margin: 30rpx auto 0; position: relative; padding: 16rpx; border: 2rpx solid #d8e2dd; border-radius: 20rpx; background: #fff; box-sizing: border-box; }
-.qr-canvas { width: 100%; height: 100%; }
+.qr-box { width: 440rpx; height: 440rpx; margin: 30rpx auto 0; padding: 20rpx; border: 2rpx solid #d8e2dd; border-radius: 20rpx; background: #fff; box-sizing: border-box; }
 .qr-view { width: 100%; height: 100%; display: flex; flex-direction: column; }
 .qr-row { flex: 1; display: flex; }
 .qr-cell { flex: 1; background: #ffffff; }
 .qr-cell.dark { background: #1a1a1a; }
-.qr-box.gray .qr-canvas { opacity: .25; }
-.qr-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #b0563c; font-size: 22rpx; }
 .countdown { margin-top: 24rpx; text-align: center; }
 .countdown text { display: block; }
 .countdown text:first-child { color: #327969; font-size: 32rpx; font-weight: 650; }

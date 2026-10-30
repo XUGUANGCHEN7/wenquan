@@ -9,14 +9,12 @@
       <text>{{orderNo}}</text>
     </view>
 
-    <view class="qr-box {{failed && !useViewFallback ? 'gray' : ''}}">
-      <canvas wx:if="{{!useViewFallback}}" id="pass-qr" type="2d" class="qr-canvas"></canvas>
-      <view class="qr-view" wx:if="{{useViewFallback}}">
-        <view wx:for="{{viewMatrix}}" wx:for-item="row" wx:for-index="ri" wx:key="ri" class="qr-row">
+    <view class="qr-box">
+      <view class="qr-view">
+        <view wx:for="{{qrModules}}" wx:for-item="row" wx:for-index="ri" wx:key="ri" class="qr-row">
           <view wx:for="{{row}}" wx:for-item="cell" wx:for-index="ci" wx:key="ci" class="qr-cell {{cell ? 'dark' : ''}}" />
         </view>
       </view>
-      <view class="qr-fallback" wx:if="{{failed && !useViewFallback}}">二维码加载失败，正在重试…</view>
     </view>
 
     <view class="countdown">

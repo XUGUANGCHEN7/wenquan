@@ -13,6 +13,18 @@ Page({
     wx.navigateTo({ url: "/pages/wallet/index" })
   },
 
+  goTicketOrders() {
+    wx.navigateTo({ url: "/pages/orders/index" })
+  },
+
+  goRoomOrders() {
+    wx.navigateTo({ url: "/pages/orders/index" })
+  },
+
+  goDiningOrders() {
+    wx.navigateTo({ url: "/pages/dining-orders/index" })
+  },
+
   showDeveloping() {
     wx.showToast({ title: "该功能正在建设中", icon: "none" })
   }

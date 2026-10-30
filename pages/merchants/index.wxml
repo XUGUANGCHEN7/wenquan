@@ -1,19 +1,16 @@
 <view class="page merchants-page">
   <view class="heading">
     <view><text>SHUNAN DINING</text><text>园内点餐</text></view>
-    <view class="head-right">
-      <view class="fulfill-toggle">
-        <text class="{{fulfillment === 'pickup' ? 'on' : ''}}" data-mode="pickup" bindtap="setFulfillment">自取</text>
-        <text class="{{fulfillment === 'delivery' ? 'on' : ''}}" data-mode="delivery" bindtap="setFulfillment">配送</text>
-      </view>
-      <text class="order">订单</text>
-    </view>
+    <text class="order" bindtap="goOrders">订单</text>
   </view>
   <view class="location">
     <text>⌂</text>
-    <text wx:if="{{fulfillment === 'pickup'}}">窗口自取 <text>选好餐品后到对应窗口取餐</text></text>
-    <text wx:else>送至 <text>{{privateRoom.room}} 私汤房 · 服务员配送到房</text></text>
-    <text>›</text>
+    <text wx:if="{{fulfillment === 'pickup'}}" class="loc-text">窗口自取 <text>选好餐品后到对应窗口取餐</text></text>
+    <text wx:else class="loc-text">送至 <text>{{privateRoom.room}} 私汤房 · 服务员配送到房</text></text>
+    <view class="fulfill-toggle">
+      <text class="{{fulfillment === 'pickup' ? 'on' : ''}}" data-mode="pickup" bindtap="setFulfillment">自取</text>
+      <text class="{{fulfillment === 'delivery' ? 'on' : ''}}" data-mode="delivery" bindtap="setFulfillment">配送</text>
+    </view>
   </view>
   <view class="ordering">
     <scroll-view class="merchant-side" scroll-y>
@@ -44,7 +41,7 @@
   </view>
   <view class="cart">
     <view class="bag">袋<text wx:if="{{quantity}}">{{quantity}}</text></view>
-    <view><text>¥{{total}}</text><text>{{cartName}} · 窗口自取</text></view>
-    <button class="{{quantity ? '' : 'disabled'}}" bindtap="checkout">去结算</button>
+    <view><text>¥{{total}}</text><text>总累计{{involvedCount > 1 ? ' · ' + involvedCount + ' 家商家' : ''}}</text></view>
+    <button class="{{quantity ? '' : 'disabled'}}" bindtap="checkout">去支付</button>
   </view>
 </view>

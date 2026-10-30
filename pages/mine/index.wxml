@@ -22,11 +22,11 @@
     </view>
 
     <view class="white-card">
-      <view class="card-head"><text>我的订单</text><text bindtap="showDeveloping">全部订单　›</text></view>
+      <view class="card-head"><text>我的订单</text><text bindtap="goTicketOrders">全部订单　›</text></view>
       <view class="order-grid">
-        <button bindtap="showDeveloping"><text>票</text><text>门票订单</text><text class="badge">1</text></button>
-        <button bindtap="showDeveloping"><text>汤</text><text>私汤预约</text></button>
-        <button bindtap="showDeveloping"><text>餐</text><text>点餐订单</text></button>
+        <button bindtap="goTicketOrders"><text>票</text><text>门票订单</text><text class="badge">1</text></button>
+        <button bindtap="goRoomOrders"><text>汤</text><text>私汤预约</text></button>
+        <button bindtap="goDiningOrders"><text>餐</text><text>点餐订单</text></button>
         <button bindtap="goWallet"><text>充</text><text>储值记录</text></button>
       </view>
     </view>

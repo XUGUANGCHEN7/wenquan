@@ -1,0 +1,26 @@
+<view class="page do-page">
+  <view wx:if="{{!orders.length}}" class="empty-card">
+    <text class="empty-title">还没有点餐订单</text>
+    <text class="empty-desc">去"园内点餐"选一份温泉美食吧，下单后可在这里查看明细与取餐进度</text>
+  </view>
+
+  <view wx:for="{{orders}}" wx:key="id" class="order-card">
+    <view class="oc-head">
+      <text class="oc-name">{{item.merchantName}}</text>
+      <text class="oc-state {{item.state}}">{{item.stateText}}</text>
+    </view>
+    <view class="oc-items">
+      <view wx:for="{{item.items}}" wx:for-item="it" wx:key="name" class="oc-item">
+        <text>{{it.name}} × {{it.qty}}</text>
+        <text>¥{{it.subtotal}}</text>
+      </view>
+    </view>
+    <view class="oc-foot">
+      <text>取餐号 {{item.no}} · {{item.fulfillText}}</text>
+      <text>¥{{item.total}}</text>
+    </view>
+  </view>
+
+  <button wx:if="{{orders.length}}" class="view-pickup" bindtap="goPickup">查看取餐提示</button>
+  <view class="safe-bottom" />
+</view>

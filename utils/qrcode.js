@@ -73,6 +73,17 @@ const RS_BLOCKS_M = [
 // 各版本对齐图案中心坐标
 const PATTERN_POSITIONS = [[], [6, 18], [6, 22], [6, 26], [6, 30], [6, 34]]
 
+// 把 [块数, 每块总码字, 每块数据码字] 三元组展开为实际块列表
+function getRSBlocks(typeNumber) {
+  const blocks = []
+  RS_BLOCKS_M[typeNumber - 1].forEach((t) => {
+    for (let i = 0; i < t[0]; i++) {
+      blocks.push({ totalCount: t[1], dataCount: t[2] })
+    }
+  })
+  return blocks
+}
+
 // 纠错级 M + 掩码 0 经过 BCH 与固定掩码异或后的格式信息（常量）
 const FORMAT_INFO_M0 = 0x5412
 
@@ -83,7 +94,7 @@ function createDataCodewords(text) {
   // 选版本：数据位 = 4(模式) + 8(字符数) + 8*n，需留 ≥4 位终止符
   let typeNumber = 0
   for (let v = 1; v <= 6; v++) {
-    const capacityBits = RS_BLOCKS_M[v - 1].reduce((s, b) => s + b[2], 0) * 8
+    const capacityBits = getRSBlocks(v).reduce((s, b) => s + b.dataCount, 0) * 8
     if (4 + 8 + bytes.length * 8 + 4 <= capacityBits) {
       typeNumber = v
       break
@@ -106,9 +117,9 @@ function createDataCodewords(text) {
   put(text.length, 8) // 版本 1-9 字符数为 8 位
   bytes.forEach((b) => put(b, 8))
 
-  const blocks = RS_BLOCKS_M[typeNumber - 1]
-  const totalData = blocks.reduce((s, b) => s + b[2], 0)
-  const totalCodewords = blocks.reduce((s, b) => s + b[1], 0)
+  const blocks = getRSBlocks(typeNumber)
+  const totalData = blocks.reduce((s, b) => s + b.dataCount, 0)
+  const totalCodewords = blocks.reduce((s, b) => s + b.totalCount, 0)
 
   // 终止符（最多 4 位 0）
   put(0, Math.min(4, totalData * 8 - buffer.length))
@@ -127,8 +138,8 @@ function createDataCodewords(text) {
   const dcdata = []
   const ecdata = []
   blocks.forEach((block) => {
-    const dcCount = block[2]
-    const ecCount = block[1] - dcCount
+    const dcCount = block.dataCount
+    const ecCount = block.totalCount - dcCount
     maxDc = Math.max(maxDc, dcCount)
     maxEc = Math.max(maxEc, ecCount)
 
