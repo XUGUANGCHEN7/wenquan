@@ -1,18 +1,30 @@
-.pickup-page { padding: 40rpx 30rpx 60rpx; }
-.pass-card { position: relative; margin-bottom: 28rpx; padding: 60rpx 34rpx 40rpx; border: 1rpx solid var(--line); border-radius: 28rpx; background: #fffdf8; text-align: center; overflow: hidden; }
-.pass-card.ready { border: 3rpx solid var(--green); background: #f2f8f5; }
-.pass-card.done { opacity: .55; }
-.badge { position: absolute; top: 0; left: 50%; transform: translateX(-50%); padding: 8rpx 26rpx 10rpx; border-radius: 0 0 16rpx 16rpx; color: #fff; background: #b9a47a; font-size: 22rpx; letter-spacing: 2rpx; }
-.badge.ready { background: var(--green); }
-.badge.done { background: #929995; }
-.pass-label { display: block; margin-top: 26rpx; color: #a28759; font-size: 18rpx; letter-spacing: 4rpx; }
-.pass-no { display: block; margin: 6rpx 0 24rpx; font: 700 130rpx/1.15 Georgia, "STSong", serif; color: #2f5d54; }
-.window-bar { padding: 20rpx; border-radius: 16rpx; color: #fff; background: var(--green); font-size: 30rpx; font-weight: 650; letter-spacing: 2rpx; }
-.window-bar.delivery { background: #9a7134; }
-.pass-desc { display: block; margin-top: 24rpx; color: #78817d; font-size: 22rpx; }
-.pass-meta { display: block; margin-top: 10rpx; color: #9a9f9c; font-size: 20rpx; }
-.done-btn { margin-top: 26rpx; height: 80rpx; display: flex; align-items: center; justify-content: center; border: 1rpx solid #aac6bd; border-radius: 40rpx; color: #327969; background: #fff; font-size: 26rpx; }
-.empty-card { padding: 80rpx 40rpx; border: 1rpx solid var(--line); border-radius: 28rpx; background: #fffdf8; text-align: center; }
+.pickup-page { padding-bottom: 60rpx; }
+.hero { position: relative; padding: 96rpx 40rpx 50rpx; color: #fff; background: linear-gradient(168deg, #3e8e7e 0%, #2f5d54 80%, #29524a 100%); border-radius: 0 0 44rpx 44rpx; overflow: hidden; }
+.hero.ready { background: linear-gradient(168deg, #46a392 0%, #2f5d54 85%); }
+.state-pill { position: absolute; top: 28rpx; left: 40rpx; padding: 6rpx 24rpx; border-radius: 999rpx; color: #d9e8e2; background: rgba(255,255,255,.16); font-size: 22rpx; letter-spacing: 2rpx; }
+.state-pill.ready { color: #2f5d54; background: #ffd34d; font-weight: 650; }
+.hero-label { display: block; margin-top: 42rpx; text-align: center; color: rgba(255,255,255,.66); font-size: 18rpx; letter-spacing: 5rpx; }
+.hero-no { display: block; margin: 4rpx 0 32rpx; text-align: center; font: 700 170rpx/1.15 Georgia, "STSong", serif; letter-spacing: 6rpx; }
+.window-line { margin: 0 auto; width: fit-content; max-width: 100%; padding: 18rpx 38rpx; border-radius: 999rpx; color: #2f5d54; background: #fff; font-size: 30rpx; font-weight: 700; letter-spacing: 2rpx; }
+.window-line.delivery { background: #f3d9a4; }
+.hero-meta { margin-top: 32rpx; display: flex; align-items: center; justify-content: space-between; color: rgba(255,255,255,.78); font-size: 22rpx; }
+.hero-done { margin: 36rpx auto 0; width: 360rpx; height: 84rpx; display: flex; align-items: center; justify-content: center; border-radius: 42rpx; color: #2f5d54; background: #ffd34d; font-size: 28rpx; font-weight: 650; }
+.rest-head { margin: 42rpx 30rpx 0; display: flex; align-items: baseline; justify-content: space-between; }
+.rest-head text:first-child { font: 600 30rpx "STSong", serif; color: #26342f; }
+.rest-head text:last-child { color: #929995; font-size: 20rpx; }
+.rest-row { min-height: 122rpx; margin: 0 30rpx; padding: 22rpx 6rpx; display: flex; align-items: center; justify-content: space-between; border-bottom: 1rpx solid var(--line); }
+.rest-row.done { opacity: .5; }
+.rest-no { display: block; font: 700 44rpx Georgia, "STSong", serif; color: #2f5d54; }
+.rest-info { display: block; margin-top: 8rpx; color: #8a938f; font-size: 20rpx; }
+.rest-right { display: flex; align-items: center; gap: 18rpx; }
+.rest-state { padding: 6rpx 18rpx; border-radius: 999rpx; font-size: 20rpx; }
+.rest-state.making { color: #8a6d2f; background: #f3ead5; }
+.rest-state.ready { color: #fff; background: var(--green); }
+.rest-state.done { color: #929995; background: #eef0ee; }
+.mini-done { margin: 0; padding: 0 24rpx; height: 60rpx; display: flex; align-items: center; border: 1rpx solid var(--green); border-radius: 999rpx; color: var(--green); background: #fff; font-size: 22rpx; }
+.list-end { margin-top: 42rpx; text-align: center; }
+.list-end text { color: #b9bfb9; font-size: 19rpx; letter-spacing: 2rpx; }
+.empty-block { padding: 130rpx 40rpx; text-align: center; }
 .empty-title { display: block; font: 600 36rpx "STSong", serif; color: #26342f; }
-.empty-desc { display: block; margin: 18rpx 0 36rpx; color: #8a938f; font-size: 22rpx; line-height: 1.6; }
+.empty-desc { display: block; margin: 18rpx 0 42rpx; color: #8a938f; font-size: 22rpx; }
 .home-btn { height: 92rpx; display: flex; align-items: center; justify-content: center; border: 1rpx solid var(--green); border-radius: 46rpx; color: var(--green); background: transparent; font-size: 30rpx; font-weight: 600; }

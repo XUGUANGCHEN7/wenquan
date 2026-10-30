@@ -19,13 +19,15 @@ Page({
     if (this.tick) clearInterval(this.tick)
   },
 
-  // 从全局订单列表同步：按状态生成展示字段
+  // 从全局订单列表同步，最新订单排最上面
   syncOrders() {
     const app = getApp()
-    const orders = (app.globalData.pickupOrders || []).map((o) => ({
-      ...o,
-      stateText: o.state === "ready" ? "请取餐" : o.state === "done" ? "已取餐" : "制作中"
-    }))
+    const orders = (app.globalData.pickupOrders || [])
+      .map((o) => ({
+        ...o,
+        stateText: o.state === "ready" ? "请取餐" : o.state === "done" ? "已取餐" : "制作中"
+      }))
+      .sort((a, b) => b.createdTs - a.createdTs)
     this.setData({ orders })
   },
 
