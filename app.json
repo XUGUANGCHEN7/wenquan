@@ -7,7 +7,6 @@
     "pages/menu/index",
     "pages/mine/index",
     "pages/wallet/index",
-    "pages/pickup/index",
     "pages/entry-pass/index",
     "pages/dining-orders/index",
     "pages/orders/index"

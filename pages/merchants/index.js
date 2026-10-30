@@ -167,7 +167,7 @@ Page({
           })
           this.carts = {}
           this.setData(this.applyMerchant(this.data.merchantIndex))
-          wx.navigateTo({ url: "/pages/pickup/index" })
+          wx.navigateTo({ url: "/pages/dining-orders/index" })
         }, 900)
       }
     })

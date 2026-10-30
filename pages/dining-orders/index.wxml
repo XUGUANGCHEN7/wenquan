@@ -1,26 +1,59 @@
 <view class="page do-page">
-  <view wx:if="{{!orders.length}}" class="empty-card">
+  <view wx:if="{{!active && !others.length}}" class="empty-card">
     <text class="empty-title">还没有点餐订单</text>
-    <text class="empty-desc">去"园内点餐"选一份温泉美食吧，下单后可在这里查看明细与取餐进度</text>
+    <text class="empty-desc">去「园内点餐」选一份温泉美食吧，下单后取餐号会醒目地显示在这里</text>
+    <button class="empty-btn" bindtap="goHome">去点餐</button>
   </view>
 
-  <view wx:for="{{orders}}" wx:key="id" class="order-card">
-    <view class="oc-head">
-      <text class="oc-name">{{item.merchantName}}</text>
-      <text class="oc-state {{item.state}}">{{item.stateText}}</text>
+  <!-- 醒目取餐卡：最新一单未取餐 -->
+  <view wx:if="{{active}}" class="now-card {{active.state}}">
+    <view class="now-head">
+      <text class="now-state {{active.state}}">{{active.stateText}}</text>
+      <text class="now-merchant">{{active.merchantName}}</text>
     </view>
-    <view class="oc-items">
-      <view wx:for="{{item.items}}" wx:for-item="it" wx:key="name" class="oc-item">
+
+    <text class="now-label">PICKUP NUMBER · 取餐号</text>
+    <text class="now-no">{{active.no}}</text>
+
+    <view class="now-window {{active.fulfillment === 'delivery' ? 'delivery' : ''}}">
+      {{active.fulfillment === 'delivery' ? '服务员送至 ' + active.room + ' 私汤房' : '请到 ' + active.window + ' 取餐'}}
+    </view>
+
+    <view class="now-items">
+      <view wx:for="{{active.items}}" wx:for-item="it" wx:key="name" class="now-item">
         <text>{{it.name}} × {{it.qty}}</text>
         <text>¥{{it.subtotal}}</text>
       </view>
     </view>
-    <view class="oc-foot">
-      <text>取餐号 {{item.no}} · {{item.fulfillText}}</text>
-      <text>¥{{item.total}}</text>
+
+    <view class="now-foot">
+      <text>共 {{active.qty}} 件</text>
+      <text class="now-total">¥{{active.total}}</text>
+    </view>
+
+    <button wx:if="{{active.state === 'ready'}}" class="now-done" data-id="{{active.id}}" bindtap="markDone">我已取到餐</button>
+    <view wx:else class="now-hint">后厨制作中，出餐后这里会变成「请取餐」</view>
+  </view>
+
+  <!-- 其余订单 -->
+  <view wx:if="{{others.length}}" class="rest-head">
+    <text>{{active ? '其他订单' : '历史订单'}}</text>
+    <text>共 {{others.length}} 单</text>
+  </view>
+  <view wx:if="{{others.length}}" class="rest-list">
+    <view wx:for="{{others}}" wx:key="id" class="rest-row {{item.state}}">
+      <view class="rest-left">
+        <text class="rest-no">{{item.no}}</text>
+        <text class="rest-info">{{item.merchantName}} · {{item.fulfillText}}</text>
+        <text class="rest-items">{{item.itemText}}</text>
+      </view>
+      <view class="rest-right">
+        <text class="rest-state {{item.state}}">{{item.stateText}}</text>
+        <button wx:if="{{item.state === 'ready'}}" class="mini-done" data-id="{{item.id}}" bindtap="markDone">取餐</button>
+      </view>
     </view>
   </view>
 
-  <button wx:if="{{orders.length}}" class="view-pickup" bindtap="goPickup">查看取餐提示</button>
+  <view wx:if="{{active}}" class="list-end"><text>— 取餐后点「我已取到餐」，本单会自动收起 —</text></view>
   <view class="safe-bottom" />
 </view>
