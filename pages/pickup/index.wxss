@@ -1,0 +1,11 @@
+.pickup-page { padding: 60rpx 30rpx 60rpx; }
+.pass-card { position: relative; padding: 60rpx 34rpx 44rpx; border: 1rpx solid var(--line); border-radius: 28rpx; background: #fffdf8; text-align: center; overflow: hidden; }
+.pass-card.ready { border: 3rpx solid var(--green); background: #f2f8f5; }
+.badge { position: absolute; top: 0; left: 50%; transform: translateX(-50%); padding: 8rpx 26rpx 10rpx; border-radius: 0 0 16rpx 16rpx; color: #fff; background: #b9a47a; font-size: 22rpx; letter-spacing: 2rpx; }
+.badge.ready { background: var(--green); }
+.pass-label { display: block; margin-top: 26rpx; color: #a28759; font-size: 18rpx; letter-spacing: 4rpx; }
+.pass-no { display: block; margin: 6rpx 0 24rpx; font: 700 150rpx/1.15 Georgia, "STSong", serif; color: #2f5d54; }
+.window-bar { padding: 20rpx; border-radius: 16rpx; color: #fff; background: var(--green); font-size: 30rpx; font-weight: 650; letter-spacing: 2rpx; }
+.pass-desc { display: block; margin-top: 24rpx; color: #78817d; font-size: 22rpx; }
+.pass-meta { display: block; margin-top: 10rpx; color: #9a9f9c; font-size: 20rpx; }
+.home-btn { margin-top: 44rpx; height: 92rpx; display: flex; align-items: center; justify-content: center; border: 1rpx solid var(--green); border-radius: 46rpx; color: var(--green); background: transparent; font-size: 30rpx; font-weight: 600; }

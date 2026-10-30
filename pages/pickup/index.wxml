@@ -1,0 +1,13 @@
+<view class="page pickup-page">
+  <view class="pass-card {{state === 'ready' ? 'ready' : ''}}">
+    <view class="badge {{state}}">{{state === 'ready' ? '请取餐' : '制作中'}}</view>
+    <text class="pass-label">PICKUP NUMBER · 取餐号</text>
+    <text class="pass-no">{{no}}</text>
+    <view class="window-bar">取餐窗口：{{window}}</view>
+    <text class="pass-desc">{{state === 'ready' ? '餐品已出餐，请到上方窗口取餐' : '出餐后将通过订阅消息通知您'}}</text>
+    <text class="pass-meta">共 {{qty}} 件 · 合计 ¥{{total}}</text>
+  </view>
+
+  <button class="home-btn" bindtap="goHome">返回首页</button>
+  <view class="safe-bottom" />
+</view>

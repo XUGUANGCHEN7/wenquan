@@ -45,11 +45,22 @@ Page({
   submit() {
     const room = this.data.rooms[this.data.roomIndex]
     const date = this.data.dates[this.data.dateIndex]
+    const slot = this.data.slots[this.data.slotIndex]
     wx.showModal({
-      title: `预约${room.name}私汤房`,
-      content: `${date.label} ${date.date} ${this.data.slots[this.data.slotIndex]}，2小时房费 ¥${room.price}。演示版本暂未接入支付。`,
-      confirmText: "我知道了",
-      showCancel: false
+      title: "确认支付",
+      content: `预约 ${room.name}私汤房 ${date.label} ${date.date} ${slot}，房费 ¥${room.price}。当前为虚拟支付演示。`,
+      confirmText: "虚拟支付",
+      cancelText: "再想想",
+      success: (res) => {
+        if (!res.confirm) return
+        wx.showLoading({ title: "支付中…", mask: true })
+        setTimeout(() => {
+          wx.hideLoading()
+          wx.navigateTo({
+            url: `/pages/entry-pass/index?type=room&room=${encodeURIComponent(room.name)}&date=${encodeURIComponent(date.label + " " + date.date)}&slot=${encodeURIComponent(slot)}&amount=${room.price}`
+          })
+        }, 900)
+      }
     })
   }
 })

@@ -1,0 +1,27 @@
+.pass-page { padding: 36rpx 30rpx 60rpx; }
+.pass-card { padding: 34rpx 30rpx; border: 1rpx solid var(--line); border-radius: 28rpx; background: #fffdf8; }
+.pass-head { display: flex; align-items: center; justify-content: space-between; }
+.pass-head .title { font: 600 34rpx "STSong", serif; color: #26342f; }
+.badge { padding: 6rpx 18rpx; border-radius: 999rpx; color: #8a6d2f; background: #f3ead5; font-size: 20rpx; }
+.order-line { margin-top: 18rpx; padding-bottom: 22rpx; border-bottom: 1rpx dashed var(--line); }
+.order-line text { display: block; }
+.order-line text:first-child { color: #979d9a; font-size: 20rpx; }
+.order-line text:last-child { margin-top: 8rpx; font-size: 40rpx; font-weight: 700; color: #26342f; }
+.qr-box { width: 380rpx; height: 380rpx; margin: 30rpx auto 0; position: relative; padding: 16rpx; border: 2rpx solid #d8e2dd; border-radius: 20rpx; background: #fff; box-sizing: border-box; }
+.qr-canvas { width: 100%; height: 100%; }
+.qr-box.gray .qr-canvas { opacity: .25; }
+.qr-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #b0563c; font-size: 22rpx; }
+.countdown { margin-top: 24rpx; text-align: center; }
+.countdown text { display: block; }
+.countdown text:first-child { color: #327969; font-size: 32rpx; font-weight: 650; }
+.countdown text:last-child { margin-top: 6rpx; color: #979d9a; font-size: 20rpx; }
+.info-list { margin-top: 26rpx; padding-top: 24rpx; border-top: 1rpx dashed var(--line); }
+.info-title { font: 600 28rpx "STSong", serif; }
+.info-row { min-height: 70rpx; display: flex; align-items: center; justify-content: space-between; border-bottom: 1rpx solid #f0ede3; }
+.info-row text:first-child { color: #929995; font-size: 22rpx; }
+.info-row text:last-child { font-size: 24rpx; font-weight: 600; }
+.refresh-btn { margin-top: 26rpx; height: 88rpx; display: flex; align-items: center; justify-content: center; border: 1rpx solid #aac6bd; border-radius: 44rpx; color: #327969; background: #fff; font-size: 28rpx; }
+.pass-notice { margin-top: 24rpx; padding: 24rpx; border-radius: 18rpx; color: #716b60; background: #eee8da; }
+.pass-notice text { display: block; }
+.pass-notice text:first-child { margin-bottom: 10rpx; font-weight: 650; }
+.pass-notice text:last-child { font-size: 21rpx; line-height: 1.7; }

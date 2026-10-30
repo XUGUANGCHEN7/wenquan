@@ -42,11 +42,24 @@ Page({
       wx.showToast({ title: "请选择购票人数", icon: "none" })
       return
     }
+    const date = this.data.dates[this.data.dateIndex]
+    const slot = this.data.slots[this.data.slotIndex]
+    const { adult, child, total } = this.data
     wx.showModal({
-      title: "确认购买公共浴池门票",
-      content: `共 ${this.data.adult + this.data.child} 张，合计 ¥${this.data.total}。演示版本暂未接入微信支付。`,
-      confirmText: "我知道了",
-      showCancel: false
+      title: "确认支付",
+      content: `共 ${adult + child} 张门票，合计 ¥${total}。当前为虚拟支付演示。`,
+      confirmText: "虚拟支付",
+      cancelText: "再想想",
+      success: (res) => {
+        if (!res.confirm) return
+        wx.showLoading({ title: "支付中…", mask: true })
+        setTimeout(() => {
+          wx.hideLoading()
+          wx.navigateTo({
+            url: `/pages/entry-pass/index?type=ticket&date=${encodeURIComponent(date.label + " " + date.date)}&slot=${encodeURIComponent(slot.name + " " + slot.time)}&adult=${adult}&child=${child}&amount=${total}`
+          })
+        }, 900)
+      }
     })
   }
 })

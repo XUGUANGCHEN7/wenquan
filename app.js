@@ -5,5 +5,17 @@ App({
       balance: 368
     },
     cart: {}
+  },
+
+  // 演示用：取餐号从 A037 起递增
+  nextPickupNo() {
+    this.globalData.pickupSeq = (this.globalData.pickupSeq || 36) + 1
+    return "A" + String(this.globalData.pickupSeq).padStart(3, "0")
+  },
+
+  // 演示用：入园凭证订单号递增
+  nextEntryOrderNo() {
+    this.globalData.entrySeq = (this.globalData.entrySeq || 0) + 1
+    return "HOT2026" + String(1000 + this.globalData.entrySeq)
   }
 })

@@ -1,0 +1,38 @@
+<view class="page pass-page">
+  <view class="pass-card">
+    <view class="pass-head">
+      <text class="title">{{title}}</text>
+      <text class="badge">待核验</text>
+    </view>
+    <view class="order-line">
+      <text>订单编号</text>
+      <text>{{orderNo}}</text>
+    </view>
+
+    <view class="qr-box {{failed ? 'gray' : ''}}">
+      <canvas id="pass-qr" type="2d" class="qr-canvas"></canvas>
+      <view class="qr-fallback" wx:if="{{failed}}">二维码加载失败，请点击刷新</view>
+    </view>
+
+    <view class="countdown">
+      <text>请在 {{seconds}}s 内出示核验</text>
+      <text>超时后二维码自动刷新，也可手动刷新</text>
+    </view>
+
+    <view class="info-list">
+      <view class="info-title">{{title}}</view>
+      <view wx:for="{{rows}}" wx:key="index" class="info-row">
+        <text>{{item[0]}}</text>
+        <text>{{item[1]}}</text>
+      </view>
+    </view>
+
+    <button class="refresh-btn" bindtap="refresh">手动刷新二维码</button>
+  </view>
+
+  <view class="pass-notice">
+    <text>使用说明</text>
+    <text>到店请向工作人员出示此二维码进行核验，核验成功后由前台发放手牌。二维码每 60 秒自动刷新，防止截图盗用。</text>
+  </view>
+  <view class="safe-bottom" />
+</view>
