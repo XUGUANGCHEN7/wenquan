@@ -56,6 +56,8 @@ Page({
         wx.showLoading({ title: "支付中…", mask: true })
         setTimeout(() => {
           wx.hideLoading()
+          // 预约成功即解锁点餐页的"配送"权限（演示逻辑，真实环境由后端校验）
+          getApp().globalData.user.privateRoom = { room: room.name }
           wx.navigateTo({
             url: `/pages/entry-pass/index?type=room&room=${encodeURIComponent(room.name)}&date=${encodeURIComponent(date.label + " " + date.date)}&slot=${encodeURIComponent(slot)}&amount=${room.price}`
           })

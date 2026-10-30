@@ -1,27 +1,58 @@
 Page({
   data: {
-    no: "A037",
-    window: "",
-    qty: 0,
-    total: 0,
-    state: "making"
+    orders: []
   },
 
-  onLoad(options) {
-    this.setData({
-      no: options.no || "A037",
-      window: decodeURIComponent(options.window || ""),
-      qty: Number(options.qty || 0),
-      total: Number(options.total || 0)
-    })
-    // 模拟后厨链路：支付成功 → 云打印/云喇叭通知后厨 → 30 秒后出餐
-    this.timer = setTimeout(() => {
-      this.setData({ state: "ready" })
-    }, 30000)
+  onShow() {
+    this.syncOrders()
+    this.startTick()
+  },
+
+  onHide() {
+    if (this.tick) {
+      clearInterval(this.tick)
+      this.tick = null
+    }
   },
 
   onUnload() {
-    if (this.timer) clearTimeout(this.timer)
+    if (this.tick) clearInterval(this.tick)
+  },
+
+  // 从全局订单列表同步：按状态生成展示字段
+  syncOrders() {
+    const app = getApp()
+    const orders = (app.globalData.pickupOrders || []).map((o) => ({
+      ...o,
+      stateText: o.state === "ready" ? "请取餐" : o.state === "done" ? "已取餐" : "制作中"
+    }))
+    this.setData({ orders })
+  },
+
+  // 模拟后厨链路：下单 30 秒后自动出餐（"请取餐"）
+  startTick() {
+    if (this.tick) return
+    this.tick = setInterval(() => {
+      const app = getApp()
+      const orders = app.globalData.pickupOrders || []
+      let changed = false
+      orders.forEach((o) => {
+        if (o.state === "making" && Date.now() - o.createdTs >= 30000) {
+          o.state = "ready"
+          changed = true
+        }
+      })
+      if (changed) this.syncOrders()
+    }, 1000)
+  },
+
+  markDone(event) {
+    const id = event.currentTarget.dataset.id
+    const app = getApp()
+    ;(app.globalData.pickupOrders || []).forEach((o) => {
+      if (o.id === id) o.state = "done"
+    })
+    this.syncOrders()
   },
 
   goHome() {

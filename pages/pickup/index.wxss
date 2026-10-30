@@ -1,11 +1,18 @@
-.pickup-page { padding: 60rpx 30rpx 60rpx; }
-.pass-card { position: relative; padding: 60rpx 34rpx 44rpx; border: 1rpx solid var(--line); border-radius: 28rpx; background: #fffdf8; text-align: center; overflow: hidden; }
+.pickup-page { padding: 40rpx 30rpx 60rpx; }
+.pass-card { position: relative; margin-bottom: 28rpx; padding: 60rpx 34rpx 40rpx; border: 1rpx solid var(--line); border-radius: 28rpx; background: #fffdf8; text-align: center; overflow: hidden; }
 .pass-card.ready { border: 3rpx solid var(--green); background: #f2f8f5; }
+.pass-card.done { opacity: .55; }
 .badge { position: absolute; top: 0; left: 50%; transform: translateX(-50%); padding: 8rpx 26rpx 10rpx; border-radius: 0 0 16rpx 16rpx; color: #fff; background: #b9a47a; font-size: 22rpx; letter-spacing: 2rpx; }
 .badge.ready { background: var(--green); }
+.badge.done { background: #929995; }
 .pass-label { display: block; margin-top: 26rpx; color: #a28759; font-size: 18rpx; letter-spacing: 4rpx; }
-.pass-no { display: block; margin: 6rpx 0 24rpx; font: 700 150rpx/1.15 Georgia, "STSong", serif; color: #2f5d54; }
+.pass-no { display: block; margin: 6rpx 0 24rpx; font: 700 130rpx/1.15 Georgia, "STSong", serif; color: #2f5d54; }
 .window-bar { padding: 20rpx; border-radius: 16rpx; color: #fff; background: var(--green); font-size: 30rpx; font-weight: 650; letter-spacing: 2rpx; }
+.window-bar.delivery { background: #9a7134; }
 .pass-desc { display: block; margin-top: 24rpx; color: #78817d; font-size: 22rpx; }
 .pass-meta { display: block; margin-top: 10rpx; color: #9a9f9c; font-size: 20rpx; }
-.home-btn { margin-top: 44rpx; height: 92rpx; display: flex; align-items: center; justify-content: center; border: 1rpx solid var(--green); border-radius: 46rpx; color: var(--green); background: transparent; font-size: 30rpx; font-weight: 600; }
+.done-btn { margin-top: 26rpx; height: 80rpx; display: flex; align-items: center; justify-content: center; border: 1rpx solid #aac6bd; border-radius: 40rpx; color: #327969; background: #fff; font-size: 26rpx; }
+.empty-card { padding: 80rpx 40rpx; border: 1rpx solid var(--line); border-radius: 28rpx; background: #fffdf8; text-align: center; }
+.empty-title { display: block; font: 600 36rpx "STSong", serif; color: #26342f; }
+.empty-desc { display: block; margin: 18rpx 0 36rpx; color: #8a938f; font-size: 22rpx; line-height: 1.6; }
+.home-btn { height: 92rpx; display: flex; align-items: center; justify-content: center; border: 1rpx solid var(--green); border-radius: 46rpx; color: var(--green); background: transparent; font-size: 30rpx; font-weight: 600; }

@@ -1,13 +1,21 @@
 <view class="page pickup-page">
-  <view class="pass-card {{state === 'ready' ? 'ready' : ''}}">
-    <view class="badge {{state}}">{{state === 'ready' ? '请取餐' : '制作中'}}</view>
-    <text class="pass-label">PICKUP NUMBER · 取餐号</text>
-    <text class="pass-no">{{no}}</text>
-    <view class="window-bar">取餐窗口：{{window}}</view>
-    <text class="pass-desc">{{state === 'ready' ? '餐品已出餐，请到上方窗口取餐' : '出餐后将通过订阅消息通知您'}}</text>
-    <text class="pass-meta">共 {{qty}} 件 · 合计 ¥{{total}}</text>
-  </view>
+  <block wx:if="{{orders.length}}">
+    <view wx:for="{{orders}}" wx:key="id" class="pass-card {{item.state}}">
+      <view class="badge {{item.state}}">{{item.stateText}}</view>
+      <text class="pass-label">PICKUP NUMBER · 取餐号</text>
+      <text class="pass-no">{{item.no}}</text>
+      <view class="window-bar {{item.fulfillment === 'delivery' ? 'delivery' : ''}}">
+        {{item.fulfillment === 'delivery' ? '将送至 ' + item.room + ' 私汤房 · 服务员配送到房' : '请到 ' + item.window + ' 取餐'}}
+      </view>
+      <text class="pass-meta">{{item.merchantName}} · 共 {{item.qty}} 件 · 合计 ¥{{item.total}}</text>
+      <button wx:if="{{item.state === 'ready'}}" class="done-btn" data-id="{{item.id}}" bindtap="markDone">模拟取餐完成</button>
+    </view>
+  </block>
 
-  <button class="home-btn" bindtap="goHome">返回首页</button>
+  <view wx:else class="empty-card">
+    <text class="empty-title">所有餐品已取完</text>
+    <text class="empty-desc">祝您游园愉快 · 下次点餐后，各窗口的取餐提示会显示在这里</text>
+    <button class="home-btn" bindtap="goHome">返回首页</button>
+  </view>
   <view class="safe-bottom" />
 </view>

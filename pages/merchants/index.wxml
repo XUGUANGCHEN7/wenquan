@@ -1,10 +1,19 @@
 <view class="page merchants-page">
   <view class="heading">
     <view><text>SHUNAN DINING</text><text>园内点餐</text></view>
-    <text class="order">订单</text>
+    <view class="head-right">
+      <view class="fulfill-toggle">
+        <text class="{{fulfillment === 'pickup' ? 'on' : ''}}" data-mode="pickup" bindtap="setFulfillment">自取</text>
+        <text class="{{fulfillment === 'delivery' ? 'on' : ''}}" data-mode="delivery" bindtap="setFulfillment">配送</text>
+      </view>
+      <text class="order">订单</text>
+    </view>
   </view>
   <view class="location">
-    <text>⌂</text><text>送至 <text>请选择取餐位置 / 私汤房</text></text><text>›</text>
+    <text>⌂</text>
+    <text wx:if="{{fulfillment === 'pickup'}}">窗口自取 <text>选好餐品后到对应窗口取餐</text></text>
+    <text wx:else>送至 <text>{{privateRoom.room}} 私汤房 · 服务员配送到房</text></text>
+    <text>›</text>
   </view>
   <view class="ordering">
     <scroll-view class="merchant-side" scroll-y>

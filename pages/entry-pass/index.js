@@ -7,7 +7,9 @@ Page({
     rows: [],
     payload: "",
     seconds: 60,
-    failed: false
+    failed: false,
+    useViewFallback: false,
+    viewMatrix: []
   },
 
   onLoad(options) {
@@ -45,20 +47,34 @@ Page({
   },
 
   onHide() {
+    this.clearTimers()
+  },
+
+  onUnload() {
+    this.clearTimers()
+  },
+
+  clearTimers() {
     if (this.timer) {
       clearInterval(this.timer)
       this.timer = null
     }
-  },
-
-  onUnload() {
-    if (this.timer) clearInterval(this.timer)
+    if (this.retryTimer) {
+      clearTimeout(this.retryTimer)
+      this.retryTimer = null
+    }
   },
 
   refresh() {
     const seed = this.data.orderNo + "." + Date.now() + "." + Math.random()
     const payload = "v2.ENTRY." + seed + "." + this.pseudoHmac(seed)
-    this.setData({ payload, seconds: 60, failed: false }, () => this.drawQr())
+    // 预生成 view 网格矩阵：canvas 三次重试都失败时自动兜底渲染
+    const { modules } = qrcode.makeMatrix(payload)
+    const viewMatrix = modules.map((row) => row.map((cell) => !!cell))
+    this.setData(
+      { payload, viewMatrix, seconds: 60, failed: false, useViewFallback: false },
+      () => this.drawQr()
+    )
     if (!this.timer) {
       this.timer = setInterval(() => {
         if (this.data.seconds <= 1) {
@@ -79,22 +95,42 @@ Page({
     return h.toString(16).padStart(8, "0")
   },
 
-  drawQr() {
-    const query = wx.createSelectorQuery()
+  drawQr(attempt) {
+    const tryCount = attempt || 0
+    const query = wx.createSelectorQuery().in(this)
     query
       .select("#pass-qr")
       .fields({ node: true, size: true })
       .exec((res) => {
         const item = res && res[0]
         if (!item || !item.node) {
-          this.setData({ failed: true })
+          console.error("[entry-pass] 第" + (tryCount + 1) + "次取 canvas 节点失败")
+          this.retryOrFail(tryCount)
+          return
+        }
+        const width = item.width || 0
+        if (width < 100) {
+          console.error("[entry-pass] 第" + (tryCount + 1) + "次 canvas 尺寸异常：", width)
+          this.retryOrFail(tryCount)
           return
         }
         try {
-          qrcode.draw(item.node, this.data.payload, item.width)
+          qrcode.draw(item.node, this.data.payload, width)
+          this.setData({ failed: false })
         } catch (e) {
-          this.setData({ failed: true })
+          console.error("[entry-pass] 绘制异常：", e)
+          this.retryOrFail(tryCount)
         }
       })
+  },
+
+  retryOrFail(tryCount) {
+    if (tryCount < 2) {
+      this.retryTimer = setTimeout(() => this.drawQr(tryCount + 1), 200)
+      return
+    }
+    // canvas 三次尝试均失败 → 切换 view 网格兜底，二维码保证可见
+    console.error("[entry-pass] canvas 渲染失败，切换 view 网格兜底")
+    this.setData({ failed: true, useViewFallback: true })
   }
 })

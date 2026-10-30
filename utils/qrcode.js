@@ -286,7 +286,8 @@ function draw(canvasNode, text, cssSize) {
   } catch (e) {
     dpr = 2
   }
-  const px = Math.max(1, Math.floor(cssSize * dpr))
+  // 尺寸下限保护：cssSize 异常（未布局/为 0）时仍保证可辨识的绘制尺寸
+  const px = Math.max(160, Math.floor((cssSize || 0) * dpr))
   canvasNode.width = px
   canvasNode.height = px
   const ctx = canvasNode.getContext("2d")
@@ -298,7 +299,12 @@ function draw(canvasNode, text, cssSize) {
   for (let r = 0; r < moduleCount; r++) {
     for (let c = 0; c < moduleCount; c++) {
       if (modules[r][c]) {
-        ctx.fillRect(Math.floor((c + quiet) * unit), Math.floor((r + quiet) * unit), Math.ceil(unit), Math.ceil(unit))
+        // 起点/终点分别取整，消除相邻模块间的缝隙
+        const x0 = Math.round((c + quiet) * unit)
+        const y0 = Math.round((r + quiet) * unit)
+        const x1 = Math.round((c + quiet + 1) * unit)
+        const y1 = Math.round((r + quiet + 1) * unit)
+        ctx.fillRect(x0, y0, x1 - x0, y1 - y0)
       }
     }
   }

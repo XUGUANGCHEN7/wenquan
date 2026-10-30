@@ -2,9 +2,12 @@ App({
   globalData: {
     user: {
       nickname: "温泉旅人",
-      balance: 368
+      balance: 368,
+      privateRoom: null
     },
-    cart: {}
+    cart: {},
+    // 取餐订单列表：不同商家的订单逐单展示在取餐页
+    pickupOrders: []
   },
 
   // 演示用：取餐号从 A037 起递增
