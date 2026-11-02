@@ -15,6 +15,8 @@ test("dining page lets guests choose a room and browse merchants on the left", (
   assert.match(script, /\/dining\/rooms/)
   assert.match(script, /\/dining\/merchants/)
   assert.match(script, /\/dining\/menu\?merchant_id=/)
+  assert.match(wxml, /load-error/)
+  assert.match(wxml, /bindtap="loadAll"/)
 })
 
 test("dining mini program is independent and room-code based", () => {

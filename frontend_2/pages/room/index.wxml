@@ -6,7 +6,8 @@
     </picker>
   </view>
   <view class="delivery {{canOrder ? '' : 'unavailable'}}">选择送餐房间 · 房间号仅用于定位，不证明访客身份或会员余额权限</view>
-  <view wx:if="{{!canOrder && !loading}}" class="room-warning">{{message || '当前房间暂不可下单，请选择其他房间或联系前台'}}</view>
+  <view wx:if="{{loadError}}" class="load-error"><text>{{loadError}}</text><button bindtap="loadAll">重新加载</button></view>
+  <view wx:if="{{!canOrder && !loading && !loadError}}" class="room-warning">{{message || '当前房间暂不可下单，请选择其他房间或联系前台'}}</view>
 
   <view wx:if="{{loading}}" class="empty">正在读取房间、商家与菜单…</view>
   <view wx:else class="dining-layout">
@@ -20,7 +21,8 @@
 
     <scroll-view class="product-panel" scroll-y>
       <view wx:if="{{merchantName}}" class="shop-head"><text class="shop-name">{{merchantName}}</text><text class="shop-note">价格与库存由服务端确认</text></view>
-      <view wx:if="{{menuLoading}}" class="empty">正在读取商品…</view>
+      <view wx:if="{{menuError}}" class="empty menu-error">{{menuError}}</view>
+      <view wx:elif="{{menuLoading}}" class="empty">正在读取商品…</view>
       <view wx:elif="{{!selectedMerchantId}}" class="empty">请选择左侧商家</view>
       <view wx:elif="{{products.length === 0}}" class="empty">该商家暂未上架商品</view>
       <view wx:else class="products">

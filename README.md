@@ -36,7 +36,7 @@ uv pip install --python .venv\Scripts\python.exe -e ".\backend[dev]"
 docker compose up -d mysql
 Set-Location backend
 ..\.venv\Scripts\python.exe -m alembic upgrade head
-..\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8000
+..\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --reload --port 8000
 ```
 
 开发环境启动时会自动写入演示会员、17 间房、演示房间使用记录、菜单、手牌、柜位和充值活动。生产环境不会自动建表或种子；必须显式运行迁移并替换所有开发适配器。
@@ -97,8 +97,9 @@ npm test
 1. 微信开发者工具导入 `frontend_2/`。
 2. AppID 当前为独立占位 `wx0000000000000002`，必须替换为该点餐小程序自己的正式 AppID，且与购票端不同。
 3. 二维码 scene 建议为 `ROOM-01` 至 `ROOM-17`；也可用链接 `?scene=ROOM-01`。无参数时开发默认 `ROOM-01`，进入后也可在页面顶部直接选择送餐房间。
-4. 点餐页左侧列出营业商家，右侧展示所选商家的商品；切换商家会清空当前购物车，订单只能包含同一商家的商品。
-5. 访客默认可浏览和微信支付；只有点击“明确登录并绑定会员”后才附带会员令牌并使用共享余额。
+4. 真机预览时，`config.js` 的 `apiBase` 必须使用电脑局域网 IP（当前开发机为 `http://192.168.43.235:8000/api/v1`），不能使用 `127.0.0.1`；手机与电脑需在同一 Wi-Fi，后端用 `--host 0.0.0.0` 启动并允许防火墙入站。电脑 IP 改变后需同步修改 `apiBase`。
+5. 点餐页左侧列出营业商家，右侧展示所选商家的商品；切换商家会清空当前购物车，订单只能包含同一商家的商品。
+6. 访客默认可浏览和微信支付；只有点击“明确登录并绑定会员”后才附带会员令牌并使用共享余额。
 
 ```powershell
 Set-Location frontend_2

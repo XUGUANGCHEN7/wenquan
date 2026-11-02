@@ -4,6 +4,10 @@
 .delivery { margin-top:24rpx; padding:20rpx 22rpx; border-radius:16rpx; color:#547269; background:#e4eee9; font-size:21rpx; line-height:1.5; }
 .delivery.unavailable,.room-warning { color:#8b5d42; background:#f3e5d9; }
 .room-warning { margin-top:14rpx; padding:18rpx; border-radius:14rpx; font-size:22rpx; }
+.load-error { margin-top:14rpx; padding:18rpx; display:flex; align-items:center; gap:16rpx; border:1rpx solid #e4c9b8; border-radius:14rpx; color:#8b4d39; background:#faece4; font-size:20rpx; line-height:1.5; }
+.load-error text { flex:1; }
+.load-error button { flex:none; padding:12rpx 18rpx; border-radius:14rpx; color:#fff; background:#9b5b43; font-size:20rpx; }
+.menu-error { color:#8b4d39; }
 .menu-heading { margin:36rpx 0 18rpx; display:flex; align-items:flex-end; justify-content:space-between; }
 .menu-heading text:first-child { font:600 34rpx "STSong",serif; }
 .menu-heading text:last-child { color:#929995; font-size:18rpx; }
