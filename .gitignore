@@ -27,6 +27,8 @@ coverage/
 *.sqlite3
 *.db
 *.log
+*.err
+*.out
 tmp/
 
 # Editors and OS

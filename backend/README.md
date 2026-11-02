@@ -6,8 +6,10 @@ FastAPI modular monolith. All business facts, prices, balances, payment states, 
 Copy-Item ..\.env.example ..\.env
 uv pip install --python ..\.venv\Scripts\python.exe -e ".[dev]"
 ..\.venv\Scripts\python.exe -m alembic upgrade head
-..\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
+..\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --reload --port 8000
 ```
+
+真机预览时手机必须能访问电脑局域网 IP 的 `8000` 端口；如 Windows 防火墙提示，请仅对专用网络/本地子网放行 Python 或 TCP 8000。不要把该开发端口直接暴露到公网。
 
 Development payment confirmation is `/api/v1/payments/{payment_no}/mock-confirm` and is disabled in production. It never calls WeChat and must not be treated as payment evidence.
 
