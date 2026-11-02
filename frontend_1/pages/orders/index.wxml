@@ -1,0 +1,29 @@
+<view class="page orders-page">
+  <view class="orders-heading"><text>MY JOURNEYS</text><text>我的订单</text></view>
+  <view wx:if="{{loading}}" class="empty">正在读取订单…</view>
+  <view wx:elif="{{orders.length === 0}}" class="empty"><text>还没有订单</text><button bindtap="goHome">去挑选一池好汤</button></view>
+  <view wx:for="{{orders}}" wx:key="order_no" class="order-card">
+    <button class="order-summary" data-order="{{item}}" bindtap="toggle">
+      <view><text>{{item.typeName}}</text><text class="status {{item.status}}">{{item.statusName}}</text></view>
+      <text class="order-no">{{item.order_no}}</text>
+      <view class="order-amount"><text>实付 / 应付</text><text>¥{{item.amount}}</text></view>
+    </button>
+    <view wx:if="{{expanded === item.order_no}}" class="order-detail">
+      <block wx:if="{{item.order_type === 'TICKET' && detail}}">
+        <text>入园日期 {{detail.visit_date}}</text>
+        <view wx:for="{{detail.tickets}}" wx:for-item="ticket" wx:key="ticket_no" class="ticket-line">
+          <text>{{ticket.category === 'ADULT' ? '成人票' : '儿童票'}} · {{ticket.status === 'USED' ? '已入园' : '待核验'}}</text>
+          <text>{{ticket.ticket_no}}</text>
+        </view>
+        <text wx:if="{{detail.tickets.length === 0}}">支付完成后逐人生成票券</text>
+      </block>
+      <block wx:if="{{item.order_type === 'PRIVATE' && detail}}">
+        <text>预约日期 {{detail.visit_date}}</text>
+        <text>场次 {{detail.start_at}} — {{detail.end_at}}</text>
+        <text>{{detail.room_number ? '已分房 ' + detail.room_number + ' 号' : '到店后由前台分房，预约时未指定房号'}}</text>
+      </block>
+      <text wx:if="{{!detail && item.order_type !== 'RECHARGE'}}">正在读取详情…</text>
+      <text wx:if="{{item.order_type === 'RECHARGE'}}">储值结果以服务端账本和支付状态为准</text>
+    </view>
+  </view>
+</view>

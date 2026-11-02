@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wenquan-backend"
+version = "0.1.0"
+description = "Shunan Hot Spring phase-one operations API"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "sqlalchemy>=2.0,<2.1",
+  "pydantic-settings>=2.6,<3",
+  "pymysql>=1.1,<2",
+  "alembic>=1.14,<2",
+  "uvicorn[standard]>=0.32,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "httpx>=0.27,<1",
+  "pytest>=8.3,<9",
+  "pytest-cov>=6,<7",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+  "mysql: requires an isolated MySQL test database",
+]
+
+[tool.coverage.run]
+source = ["app"]
+branch = true

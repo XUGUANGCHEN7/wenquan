@@ -1,0 +1,23 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: wenquan-mysql-dev
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: wenquan
+      MYSQL_USER: wenquan
+      MYSQL_PASSWORD: wenquan_dev
+      MYSQL_ROOT_PASSWORD: root_dev_only
+      TZ: Asia/Shanghai
+    ports:
+      - "3307:3306"
+    volumes:
+      - wenquan_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot_dev_only"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  wenquan_mysql_data:

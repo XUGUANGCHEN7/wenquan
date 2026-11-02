@@ -1,0 +1,42 @@
+<view class="page private-page">
+  <view class="room-hero">
+    <image mode="aspectFill" src="{{hero}}" />
+    <view class="shade" />
+    <view class="hero-copy"><text>PRIVATE ONSEN</text><text>私汤场次预约</text><text>120 分钟 / 场 · 含桑拿 · 连续场次仅最后清洁一次</text></view>
+  </view>
+  <view class="facilities">
+    <view><text>汤</text><text>独立汤池</text></view><view><text>憩</text><text>休息空间</text></view>
+    <view><text>桑</text><text>包含桑拿</text></view><view><text>房</text><text>到店分房</text></view>
+  </view>
+
+  <view class="section-head room-head"><view><text class="en">VISIT DATE</text><text class="title">选择到店日期</text></view></view>
+  <scroll-view class="dates private-dates" scroll-x>
+    <button wx:for="{{dates}}" wx:key="value" class="{{dateIndex === index ? 'active' : ''}}" data-index="{{index}}" bindtap="selectDate">{{item.label}}</button>
+  </scroll-view>
+
+  <view class="section-head room-head"><view><text class="en">CONSECUTIVE SLOTS</text><text class="title">选择连续场次</text></view><text class="more">¥{{unitPriceDisplay}} / 场</text></view>
+  <view class="slot-options">
+    <button wx:for="{{slots}}" wx:key="slot_index" class="{{item.active ? 'active' : ''}}" data-index="{{index}}" bindtap="selectSlot" disabled="{{item.available === 0}}">
+      <text>{{item.start}}—{{item.end}}</text><text>{{item.available > 0 ? '可售 ' + item.available + ' 间' : '暂不可售'}}</text>
+    </button>
+  </view>
+  <view class="availability-note">先后点选起止场次可选择连续区间；最终可售由服务端按同一房间的完整使用及清洁区间确认。</view>
+
+  <view class="booking-card arrival-card">
+    <picker mode="time" value="{{expectedArrival}}" bindchange="selectArrival">
+      <view><text class="label">预计到店时间</text><text>{{expectedArrival}}</text><text>›</text></view>
+    </picker>
+  </view>
+  <view class="form-section private-payment">
+    <view class="payment-methods">
+      <button class="{{paymentMethod === 'WECHAT' ? 'active' : ''}}" data-method="WECHAT" bindtap="selectPayment">微信支付</button>
+      <button class="{{paymentMethod === 'BALANCE' ? 'active' : ''}}" data-method="BALANCE" bindtap="selectPayment">会员余额</button>
+    </view>
+  </view>
+  <view class="notice"><text>预约与分房说明</text><text>预约时不选择具体房号；待支付预占保留 15 分钟。实际使用从前台分房起算，若晚到造成冲突，将交由前台处理，不会覆盖下一笔预约。取消与退款政策以业务方确认规则为准。</text></view>
+
+  <view class="private-bottom">
+    <view><text>{{selected.length}} 场 · 服务端价格预估</text><text><text>¥</text>{{total}}</text></view>
+    <button loading="{{submitting}}" disabled="{{!selected.length || submitting}}" bindtap="submit">提交预约</button>
+  </view>
+</view>

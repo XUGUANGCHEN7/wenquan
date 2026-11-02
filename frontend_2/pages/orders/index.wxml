@@ -1,0 +1,12 @@
+<view class="page dining-orders">
+  <view class="orders-title"><text class="eyebrow">DINING JOURNEY</text><text class="page-title">点餐订单</text></view>
+  <view wx:if="{{loading}}" class="empty">正在读取订单…</view>
+  <view wx:elif="{{orders.length === 0}}" class="empty">暂无本机可查的点餐订单；会员登录后可查询账号订单。</view>
+  <view wx:for="{{orders}}" wx:key="order_no" class="dining-order-card">
+    <view class="order-top"><text>送至 {{roomNumber}} 号私汤房</text><text class="fulfillment {{item.fulfillment_status}}">{{item.statusName}}</text></view>
+    <view wx:for="{{item.items}}" wx:for-item="line" wx:key="name_snapshot" class="order-line"><text>{{line.name_snapshot}} × {{line.quantity}}</text><text>¥{{line.price}}</text></view>
+    <view class="order-total"><text>合计</text><text>¥{{item.amount}}</text></view>
+    <text class="order-no">{{item.order_no}}</text>
+    <view wx:if="{{item.fulfillment_status === 'EXCEPTION'}}" class="exception-note">{{item.exception_reason}}。订单未自动退款，请由前台按权限处理。</view>
+  </view>
+</view>

@@ -1,0 +1,54 @@
+.room-page { padding:34rpx 28rpx 240rpx; }
+.room-head { display:flex; align-items:flex-end; justify-content:space-between; }
+.room-code { padding:10rpx 14rpx; border-radius:12rpx; color:#6c786f; background:#e9e4d8; font-size:18rpx; }
+.delivery { margin-top:24rpx; padding:20rpx 22rpx; border-radius:16rpx; color:#547269; background:#e4eee9; font-size:21rpx; line-height:1.5; }
+.delivery.unavailable,.room-warning { color:#8b5d42; background:#f3e5d9; }
+.room-warning { margin-top:14rpx; padding:18rpx; border-radius:14rpx; font-size:22rpx; }
+.menu-heading { margin:36rpx 0 18rpx; display:flex; align-items:flex-end; justify-content:space-between; }
+.menu-heading text:first-child { font:600 34rpx "STSong",serif; }
+.menu-heading text:last-child { color:#929995; font-size:18rpx; }
+.products { display:grid; gap:18rpx; }
+.product-card { min-height:190rpx; padding:18rpx; display:grid; grid-template-columns:140rpx 1fr auto; gap:18rpx; align-items:center; border:1rpx solid var(--line); border-radius:22rpx; background:#fffdf8; }
+.product-card.sold-out { opacity:.58; }
+.product-image { width:140rpx; height:140rpx; display:flex; align-items:center; justify-content:center; overflow:hidden; border-radius:18rpx; color:#55766a; background:#e3ede7; font:42rpx "STSong",serif; }
+.product-image image { width:100%; height:100%; }
+.product-info text { display:block; }
+.product-name { font-size:28rpx; font-weight:650; }
+.product-desc { margin-top:9rpx; color:#818b86; font-size:20rpx; line-height:1.4; }
+.product-category { margin-top:8rpx; color:#a08b66; font-size:18rpx; }
+.product-price { margin-top:12rpx; color:#2f7566; font-size:30rpx; font-weight:700; }
+.counter { display:flex; flex-direction:column; align-items:center; gap:14rpx; }
+.counter button { width:48rpx; height:48rpx; border:1rpx solid #aac6bd; border-radius:50%; color:#327969; background:#fff; font-size:26rpx; }
+.counter text { font-size:24rpx; font-weight:650; }
+.checkout-panel { position:fixed; right:0; bottom:0; left:0; z-index:10; padding:18rpx 28rpx calc(18rpx + env(safe-area-inset-bottom)); border-top:1rpx solid var(--line); background:rgba(255,255,255,.98); }
+.checkout-bar { margin-top:16rpx; display:flex; align-items:center; justify-content:space-between; }
+.checkout-bar view text { display:block; color:#8b938f; font-size:19rpx; }
+.checkout-bar view text:last-child { margin-top:5rpx; color:#2f6e62; font-size:36rpx; font-weight:700; }
+.checkout-bar > button { width:290rpx; height:82rpx; border-radius:41rpx; color:#fff; background:var(--green); font-size:27rpx; font-weight:650; }
+
+.room-top { display:flex; align-items:center; justify-content:space-between; gap:20rpx; }
+.room-current { display:block; margin-top:8rpx; font:600 42rpx "STSong",serif; }
+.room-picker { min-width:250rpx; padding:18rpx 20rpx; display:flex; align-items:center; justify-content:space-between; gap:16rpx; border:1rpx solid #d7cfbd; border-radius:18rpx; color:#3c5f55; background:#fffdf8; font-size:23rpx; }
+.room-picker .chevron { color:#9a8d74; font-size:28rpx; }
+.dining-layout { height:calc(100vh - 650rpx); min-height:560rpx; margin-top:24rpx; display:grid; grid-template-columns:176rpx 1fr; overflow:hidden; border:1rpx solid var(--line); border-radius:24rpx; background:#fffdf8; }
+.merchant-rail { height:100%; background:#f0ede4; }
+.rail-title { padding:24rpx 16rpx 18rpx; color:#8d8678; font-size:19rpx; letter-spacing:2rpx; }
+.merchant-tab { padding:28rpx 16rpx; display:flex; flex-direction:column; gap:9rpx; border-left:6rpx solid transparent; border-bottom:1rpx solid #e1dbcf; color:#7b847f; }
+.merchant-tab.active { border-left-color:var(--green); color:#263c35; background:#fffdf8; }
+.merchant-tab-name { font-size:25rpx; font-weight:650; line-height:1.35; }
+.merchant-tab-count { color:#9a9f9b; font-size:18rpx; }
+.rail-empty { padding:40rpx 16rpx; color:#9a9f9b; font-size:21rpx; text-align:center; }
+.product-panel { height:100%; padding:22rpx 20rpx 30rpx; background:#fffdf8; }
+.shop-head { padding:0 0 18rpx; display:flex; align-items:flex-end; justify-content:space-between; gap:12rpx; border-bottom:1rpx solid #eee8da; }
+.shop-name { font:600 34rpx "STSong",serif; }
+.shop-note { color:#9a9f9b; font-size:18rpx; }
+.product-panel .products { margin-top:12rpx; gap:0; }
+.product-panel .product-card { min-height:190rpx; padding:18rpx 0; grid-template-columns:142rpx 1fr 54rpx; gap:16rpx; border:0; border-bottom:1rpx solid #eee8da; border-radius:0; background:transparent; }
+.product-panel .product-info { min-width:0; }
+.product-panel .product-image { width:142rpx; height:142rpx; border-radius:20rpx; }
+.product-panel .product-name { font-size:27rpx; line-height:1.35; }
+.product-panel .product-desc { margin-top:7rpx; }
+.product-panel .product-category { margin-top:6rpx; }
+.product-panel .product-price { margin-top:10rpx; }
+.product-panel .counter button { width:50rpx; height:50rpx; border:0; color:#fff; background:#4b514d; }
+.product-panel .empty { padding:90rpx 20rpx; }

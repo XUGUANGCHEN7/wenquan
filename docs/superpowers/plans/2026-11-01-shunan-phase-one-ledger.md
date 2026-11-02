@@ -1,0 +1,12 @@
+# Execution Ledger
+
+- Ruling: Continue inline after the execution-method prompt timed out — the user had already explicitly approved continuing the whole project in this session — if this was not intended, independent per-task review is absent.
+- Ruling: Keep unrelated historical root files (`test.py`, `11`, `a-test.md`, `b-test.md`) untouched — they predate this project and are outside the approved scope — retaining them costs only minor repository clutter.
+- Ruling: Do not copy `mcp.json` or `.mcp.json` from the original untracked `frontend_1` — they contain credentials and are not application dependencies — any developer using those external settings must configure them locally and rotate exposed keys.
+- Task 1 started: repository layout, backend foundation, and contract tests.
+- Tasks 1-8 and Task 9 except isolated MySQL execution completed: backend domain/API, four frontends/device service, docs, migrations, unit/static/build checks.
+- Ruling: Do not start or guess credentials for the local MySQL 5.7 service; Docker engine is unavailable — SQLite domain tests and migration checks run, MySQL concurrency remains unexecuted — if wrong, production concurrency confidence is lower than stated.
+- Ruling: Preserve the real-looking AppID written into `frontend_1/project.config.json`, restore `frontend_2` to a distinct placeholder, and test valid-and-distinct AppIDs — avoids overwriting user tooling while enforcing the two-AppID constraint — if the value was an accidental duplicate, the user must confirm the purchase mini program AppID before release.
+- Final review findings fixed: paid-EXCEPTION refund outlet, paid-exception board, production dev-token fail-closed, unissued-deposit refund, live room-use resale blocking, food/extension generic-refund fail-closed, extension room locking, and explicit admission separation.
+- Final verification: backend 34 passed across groups; minis 4+3; Web 7 plus typecheck/build; device 5; Alembic check clean; live API/Web smoke passed. MySQL tests 2 not executed.
+- User request: allow choosing the dining room number in `frontend_2`, use a left-merchant/right-product layout, and add admin merchant/product CRUD. Implemented with public room/merchant/menu endpoints, active-merchant order enforcement, admin CRUD, and a dedicated "商家商品" Web page. Updated verification: backend 37 tests across groups; dining mini 4; Web 8 plus typecheck/build.

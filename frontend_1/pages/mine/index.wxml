@@ -1,0 +1,22 @@
+<view class="page mine-page">
+  <view class="mine-top"><view class="status-space" />
+    <view class="profile"><view class="avatar">蜀</view><view><text>{{nickname}}</text><text>统一业务会员 · 两个小程序一份账本</text></view><text>›</text></view>
+  </view>
+  <view class="mine-content">
+    <view class="balance-card"><view><text>储值余额</text><text bindtap="goWallet">余额明细　›</text></view>
+      <text class="amount"><text>¥</text>{{balance}}</text><text class="balance-desc">可用于门票、私汤与独立房间点餐</text>
+      <button bindtap="goWallet">进入储值中心</button><view class="ring ring-one" /><view class="ring ring-two" />
+    </view>
+    <view class="white-card"><view class="card-head"><text>我的订单</text><text bindtap="goOrders">全部订单　›</text></view>
+      <view class="order-grid member-order-grid">
+        <button bindtap="goOrders"><text>票</text><text>门票订单</text></button>
+        <button bindtap="goOrders"><text>汤</text><text>私汤预约</text></button>
+        <button bindtap="goWallet"><text>充</text><text>储值记录</text></button>
+      </view>
+    </view>
+    <view class="white-card services"><view class="card-head"><text>常用服务</text></view>
+      <button bindtap="goOrders"><text class="service-icon">码</text><view><text>票券与预约状态</text><text>每票仅支持一次人工入园核验</text></view><text>›</text></button>
+      <button bindtap="contact"><text class="service-icon">客</text><view><text>联系客服</text><text>异常订单请由前台按权限处理</text></view><text>›</text></button>
+    </view>
+  </view>
+</view>
