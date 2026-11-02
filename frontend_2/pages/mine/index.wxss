@@ -1,0 +1,13 @@
+.dining-member { padding:40rpx 30rpx; }
+.member-card { padding:36rpx 30rpx; border-radius:28rpx; color:#eff7f2; background:linear-gradient(145deg,#284f47,#3e8e7e); }
+.member-card .eyebrow { color:#d7c9a6; }
+.member-desc { display:block; margin:26rpx 0; color:#d5e2dc; font-size:23rpx; line-height:1.7; }
+.member-balance { margin:30rpx 0; }
+.member-balance text { display:block; font-size:22rpx; }
+.member-balance text:last-child { margin-top:10rpx; font-size:52rpx; font-weight:700; }
+.member-card .primary { color:#2f6659; background:#f7f3e7; }
+.logout { height:80rpx; border:1rpx solid #c7dbd3; border-radius:40rpx; color:#fff; background:transparent; font-size:24rpx; }
+.identity-note { margin-top:28rpx; padding:28rpx; border:1rpx solid var(--line); border-radius:22rpx; background:#fffdf8; }
+.identity-note text { display:block; line-height:1.7; }
+.identity-note text:first-child { margin-bottom:12rpx; font-weight:650; }
+.identity-note text:last-child { color:#77827c; font-size:22rpx; }

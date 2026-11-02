@@ -1,0 +1,20 @@
+.orders-page { padding: 36rpx 30rpx; }
+.orders-heading text { display: block; }
+.orders-heading text:first-child { color: #a28759; font-size: 18rpx; letter-spacing: 4rpx; }
+.orders-heading text:last-child { margin-top: 10rpx; font: 600 44rpx "STSong",serif; }
+.empty { margin-top: 100rpx; padding: 50rpx; text-align: center; color: #7d8984; }
+.empty text,.empty button { display: block; margin: 20rpx auto; }
+.empty button { padding: 20rpx 30rpx; border-radius: 40rpx; color: #fff; background: var(--green); }
+.order-card { margin-top: 24rpx; overflow: hidden; border: 1rpx solid var(--line); border-radius: 24rpx; background: #fffdf8; }
+.order-summary { padding: 26rpx; text-align: left; }
+.order-summary > view { display: flex; align-items: center; justify-content: space-between; }
+.order-summary > view > text:first-child { font-size: 29rpx; font-weight: 650; }
+.status { padding: 8rpx 14rpx; border-radius: 20rpx; color: #327969; background: #e5f1ec; font-size: 20rpx; }
+.status.PENDING { color: #9b6a2f; background: #f7ead8; }
+.status.EXCEPTION { color: #a64737; background: #fae5df; }
+.order-no { display: block; margin: 16rpx 0; color: #9aa09d; font-size: 18rpx; word-break: break-all; }
+.order-amount { color: #7e8883; font-size: 22rpx; }
+.order-amount text:last-child { color: #2f6e62; font-size: 30rpx; font-weight: 650; }
+.order-detail { padding: 22rpx 26rpx; border-top: 1rpx solid var(--line); background: #f5f2e9; }
+.order-detail > text,.ticket-line { display: block; margin: 10rpx 0; color: #68756f; font-size: 22rpx; line-height: 1.5; }
+.ticket-line text { display: block; word-break: break-all; }

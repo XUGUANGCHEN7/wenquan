@@ -1,0 +1,41 @@
+<view class="page tickets-page">
+  <view class="ticket-intro">
+    <view><text class="en">PUBLIC BATH</text><text class="title">公共浴池入园票</text><text class="desc">每位实际入园游客均需一张独立门票</text></view>
+    <image mode="aspectFill" src="https://images.unsplash.com/photo-1706189767508-8df45439f92c?auto=format&fit=crop&w=700&q=85" />
+  </view>
+  <view class="tips">平日 29 元，周末及后台配置节假日 49 元；每票仅支持一次人工核验入园，儿童规则与价格以服务端配置为准。</view>
+
+  <view class="form-section">
+    <view class="step-head"><text>01</text><view><text>选择入园日期</text><text>价格由服务端按日期返回</text></view></view>
+    <scroll-view class="dates" scroll-x>
+      <button wx:for="{{dates}}" wx:key="value" class="{{dateIndex === index ? 'active' : ''}}" data-index="{{index}}" bindtap="selectDate">
+        <text>{{item.label}}</text><text>{{item.display}}</text>
+      </button>
+    </scroll-view>
+  </view>
+
+  <view class="form-section">
+    <view class="step-head"><text>02</text><view><text>选择购票人数</text><text>支付后逐人生成独立票券</text></view></view>
+    <view class="guest">
+      <view><text>成人票 · ¥{{adultDisplay}}</text><text>成交时保存价格快照</text></view>
+      <view class="counter"><button data-type="adult" data-delta="-1" bindtap="changeCount">−</button><text>{{adult}}</text><button data-type="adult" data-delta="1" bindtap="changeCount">＋</button></view>
+    </view>
+    <view class="guest">
+      <view><text>儿童票 · ¥{{childDisplay}}</text><text>适用规则以现场及后台配置为准</text></view>
+      <view class="counter"><button data-type="child" data-delta="-1" bindtap="changeCount">−</button><text>{{child}}</text><button data-type="child" data-delta="1" bindtap="changeCount">＋</button></view>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <view class="step-head"><text>03</text><view><text>支付方式</text><text>支付结果以服务端查询为准</text></view></view>
+    <view class="payment-methods">
+      <button class="{{paymentMethod === 'WECHAT' ? 'active' : ''}}" data-method="WECHAT" bindtap="selectPayment">微信支付</button>
+      <button class="{{paymentMethod === 'BALANCE' ? 'active' : ''}}" data-method="BALANCE" bindtap="selectPayment">会员余额</button>
+    </view>
+  </view>
+
+  <view class="bottom-bar">
+    <view><text>服务端价格预估</text><text class="total"><text>¥</text>{{total}}</text></view>
+    <button loading="{{submitting}}" disabled="{{loading || submitting}}" bindtap="submit">{{submitting ? '正在确认' : '确认购票'}}</button>
+  </view>
+</view>

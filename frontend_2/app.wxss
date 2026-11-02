@@ -1,0 +1,13 @@
+page { --green:#3e8e7e; --paper:#f7f4ec; --line:#e5decd; min-height:100%; color:#26342f; background:var(--paper); font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif; font-size:28rpx; }
+view,text,image,button,scroll-view { box-sizing:border-box; }
+button { padding:0; line-height:1.2; }
+button::after { border:0; }
+button[disabled] { opacity:.5; }
+.page { min-height:100vh; padding-bottom:calc(40rpx + env(safe-area-inset-bottom)); }
+.eyebrow { color:#a28759; font-size:18rpx; letter-spacing:4rpx; }
+.page-title { display:block; margin-top:10rpx; font:600 44rpx "STSong",serif; }
+.empty { padding:80rpx 30rpx; text-align:center; color:#87908c; }
+.payment-methods { display:grid; grid-template-columns:1fr 1fr; gap:14rpx; }
+.payment-methods button { height:82rpx; border:1rpx solid var(--line); border-radius:18rpx; background:#fff; color:#63716b; font-size:25rpx; }
+.payment-methods button.active { border:3rpx solid var(--green); color:#2f6e62; background:#edf5f1; }
+.primary { height:90rpx; display:flex; align-items:center; justify-content:center; border-radius:45rpx; color:#fff; background:var(--green); font-weight:650; }

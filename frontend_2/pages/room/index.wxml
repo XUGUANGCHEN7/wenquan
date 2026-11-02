@@ -1,0 +1,45 @@
+<view class="page room-page">
+  <view class="room-top">
+    <view><text class="eyebrow">私汤房点餐</text><text class="room-current">{{roomNumber}} 号房</text></view>
+    <picker range="{{roomOptions}}" range-key="label" value="{{roomIndex}}" bindchange="selectRoom">
+      <view class="room-picker"><text>{{roomLabel}}</text><text class="chevron">⌄</text></view>
+    </picker>
+  </view>
+  <view class="delivery {{canOrder ? '' : 'unavailable'}}">选择送餐房间 · 房间号仅用于定位，不证明访客身份或会员余额权限</view>
+  <view wx:if="{{!canOrder && !loading}}" class="room-warning">{{message || '当前房间暂不可下单，请选择其他房间或联系前台'}}</view>
+
+  <view wx:if="{{loading}}" class="empty">正在读取房间、商家与菜单…</view>
+  <view wx:else class="dining-layout">
+    <scroll-view class="merchant-rail" scroll-y>
+      <view class="rail-title">商家</view>
+      <view wx:for="{{merchants}}" wx:key="id" class="merchant-tab {{selectedMerchantId === item.id ? 'active' : ''}}" data-id="{{item.id}}" bindtap="selectMerchant">
+        <text class="merchant-tab-name">{{item.name}}</text><text class="merchant-tab-count">{{item.item_count}} 件</text>
+      </view>
+      <view wx:if="{{merchants.length === 0}}" class="rail-empty">暂无营业商家</view>
+    </scroll-view>
+
+    <scroll-view class="product-panel" scroll-y>
+      <view wx:if="{{merchantName}}" class="shop-head"><text class="shop-name">{{merchantName}}</text><text class="shop-note">价格与库存由服务端确认</text></view>
+      <view wx:if="{{menuLoading}}" class="empty">正在读取商品…</view>
+      <view wx:elif="{{!selectedMerchantId}}" class="empty">请选择左侧商家</view>
+      <view wx:elif="{{products.length === 0}}" class="empty">该商家暂未上架商品</view>
+      <view wx:else class="products">
+        <view wx:for="{{products}}" wx:key="id" class="product-card {{!item.available || item.stock === 0 ? 'sold-out' : ''}}">
+          <view class="product-image"><image wx:if="{{item.image_url}}" src="{{item.image_url}}" mode="aspectFill" /><text wx:else>{{item.mark}}</text></view>
+          <view class="product-info">
+            <text class="product-name">{{item.name}}</text>
+            <text class="product-desc">{{item.description || '现点现做'}}</text>
+            <text class="product-category">{{item.category}} · {{item.stock === null ? '库存以后台为准' : '可售 ' + item.stock}}</text>
+            <text class="product-price">¥{{item.price}}</text>
+          </view>
+          <view class="counter"><button data-index="{{index}}" data-delta="-1" bindtap="changeCount" disabled="{{counts[index] === 0}}">−</button><text>{{counts[index]}}</text><button data-index="{{index}}" data-delta="1" bindtap="changeCount" disabled="{{!item.available || item.stock === 0}}">＋</button></view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="checkout-panel">
+    <view class="payment-methods"><button class="{{paymentMethod === 'WECHAT' ? 'active' : ''}}" data-method="WECHAT" bindtap="selectPayment">本人微信支付</button><button class="{{paymentMethod === 'BALANCE' ? 'active' : ''}}" data-method="BALANCE" bindtap="selectPayment">会员余额{{memberLoggedIn ? '' : '（先登录）'}}</button></view>
+    <view class="checkout-bar"><view><text>{{merchantName || '请选择商家'}} · 已选 {{quantity}} 件</text><text>¥{{total}}</text></view><button loading="{{submitting}}" disabled="{{!canOrder || !selectedMerchantId || !quantity || submitting}}" bindtap="submit">提交点餐</button></view>
+  </view>
+</view>

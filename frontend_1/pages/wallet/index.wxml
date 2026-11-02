@@ -1,0 +1,20 @@
+<view class="page wallet-page">
+  <view class="wallet-card"><text>当前储值余额</text><text class="balance"><text>¥</text>{{balance}}</text><text>与独立点餐小程序共用同一会员账本</text><view class="ring one" /><view class="ring two" /></view>
+  <view class="section-head wallet-head"><view><text class="en">RECHARGE BONUS</text><text class="title">选择储值金额</text></view></view>
+  <view class="plans">
+    <button wx:for="{{plans}}" wx:key="id" class="{{selected === index ? 'active' : ''}}" data-index="{{index}}" bindtap="selectPlan">
+      <text class="popular">{{item.name}}</text><text>储值</text><text>¥{{item.amount}}</text><text>赠送 ¥{{item.gift}}</text>
+    </button>
+  </view>
+  <view class="benefits"><text class="benefit-title">账本说明</text>
+    <view><text>01</text><view><text>全场通用</text><text>门票、私汤和独立房间点餐均可使用</text></view></view>
+    <view><text>02</text><view><text>服务端确认</text><text>消费先扣本金，再扣赠送金；余额不由客户端修改</text></view></view>
+    <view><text>03</text><view><text>不支持提现</text><text>一期不实现储值余额自动退还或提现</text></view></view>
+  </view>
+  <view class="entries"><text class="entries-title">最近账本记录</text>
+    <view wx:for="{{entries}}" wx:key="reference" class="entry-line"><text>{{item.entry_type}} · {{item.reference}}</text><text>{{item.delta}} · 余 {{item.after}}</text></view>
+    <view wx:if="{{!loading && entries.length === 0}}" class="entry-empty">暂无储值或消费记录</view>
+  </view>
+  <view class="agreement">当前为开发 Mock 支付，正式环境需配置微信支付商户能力。</view>
+  <button class="recharge" loading="{{submitting}}" disabled="{{!plans.length || submitting}}" bindtap="recharge">立即储值 ¥{{plans[selected].amount}}</button>
+</view>
