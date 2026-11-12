@@ -1,6 +1,6 @@
 # 蜀南温泉运营系统一期
 
-本仓库按 `.clinerules/project-rules.md` 交付一期可运行骨架：两个独立微信原生小程序、Vue 3 运营 Web、FastAPI/MySQL 模块化单体，以及只主动出站访问后端的 Windows 设备任务服务。
+本仓库按 `.clinerules/project-rules.md` 交付一期可运行骨架：两个独立 uni-app + Vue 3 微信小程序、Vue 3 运营 Web、FastAPI/MySQL 模块化单体，以及只主动出站访问后端的 Windows 设备任务服务。
 
 > 当前是开发/Mock 环境，不是生产验收。微信支付、微信登录、真实 Windows SDK、NFC 读写器、柜锁和私汤锁尚未接入；开发 Mock 的成功页面不代表真实扣款或硬件动作成功。
 
@@ -8,11 +8,14 @@
 
 | 目录 | 内容 |
 | --- | --- |
-| `frontend_1/` | 购票会员小程序：门票、私汤连续场次预约、统一余额、订单、充值 |
-| `frontend_2/` | 独立私汤房点餐小程序：房间选择、左侧商家/右侧商品、访客微信/会员余额、商家状态 |
+| `frontend_1/` | uni-app 购票会员小程序：门票、私汤连续场次预约、统一余额、订单、充值 |
+| `frontend_2/` | uni-app 独立私汤房点餐小程序：房间选择、左侧商家/右侧商品、访客微信/会员余额、商家状态 |
 | `frontend_web/` | 前台、商家、财务、管理员工作台；管理员可维护商家和商品 |
 | `backend/` | FastAPI、SQLAlchemy、Alembic、MySQL 权威业务事实与 API |
 | `device_service/` | 主动轮询设备任务、可替换适配器、Mock 与本地结果日志 |
+| `docs/backend-api.md` | 详细中文后端接口文档 |
+| `docs/backend-system-architecture.md` | 后端系统架构规范 |
+| `docs/web-product-requirements.md` | 运营 Web 结构化 PRD |
 | `docs/superpowers/specs/` | 已批准设计 |
 | `docs/superpowers/plans/` | 实施计划与执行选择记录 |
 | `.clinerules/` | 项目持续约束 |
@@ -45,6 +48,9 @@ Set-Location backend
 - OpenAPI：<http://localhost:8000/docs>
 - 健康检查：`GET /api/v1/health`
 - 导出快照：`docs/openapi.json`
+- 详细接口文档：[`docs/backend-api.md`](docs/backend-api.md)
+- 后端架构规范：[`docs/backend-system-architecture.md`](docs/backend-system-architecture.md)
+- 运营 Web PRD：[`docs/web-product-requirements.md`](docs/web-product-requirements.md)
 
 ### 开发令牌
 
@@ -80,33 +86,39 @@ npm run build
 
 ## 两个小程序
 
+两个小程序均已迁移为 uni-app + Vue 3。源码在各自 `src/`，根目录不再直接作为微信原生项目导入。
+
 ### 购票会员端
 
-1. 微信开发者工具导入 `frontend_1/`。
-2. 当前本机 AppID 若已由微信开发者工具写入真实值，请确认它属于购票端；不得与点餐端共用。AppSecret 不进入仓库。
-3. `config.js` 的 `apiBase` 默认指向 `http://127.0.0.1:8000/api/v1`；开发阶段可关闭合法域名校验。
-4. `config.js` 的 `development: true` 使用开发会员令牌和 Mock 支付；正式环境必须实现微信登录、`wx.requestPayment`、支付结果服务端查询，并关闭开发令牌。
+1. AppID 位于 `frontend_1/src/manifest.json` 的 `mp-weixin.appid`，不得与点餐端共用。
+2. `frontend_1/src/config.js` 自动区分开发者工具和真机接口地址；开发环境使用开发会员令牌和 Mock 支付。
+3. 构建后在微信开发者工具导入 `frontend_1/dist/dev/mp-weixin`（开发）或 `frontend_1/dist/build/mp-weixin`（生产）。不要导入项目根目录。
 
 ```powershell
 Set-Location frontend_1
+npm install
 npm test
+npm run dev:mp-weixin
+npm run build:mp-weixin
 ```
 
 ### 独立房间点餐端
 
-1. 微信开发者工具导入 `frontend_2/`。
-2. AppID 当前为独立占位 `wx0000000000000002`，必须替换为该点餐小程序自己的正式 AppID，且与购票端不同。
-3. 二维码 scene 建议为 `ROOM-01` 至 `ROOM-17`；也可用链接 `?scene=ROOM-01`。无参数时开发默认 `ROOM-01`，进入后也可在页面顶部直接选择送餐房间。
-4. 真机预览时，`config.js` 的 `apiBase` 必须使用电脑局域网 IP（当前开发机为 `http://192.168.43.235:8000/api/v1`），不能使用 `127.0.0.1`；手机与电脑需在同一 Wi-Fi，后端用 `--host 0.0.0.0` 启动并允许防火墙入站。电脑 IP 改变后需同步修改 `apiBase`。
-5. 点餐页左侧列出营业商家，右侧展示所选商家的商品；切换商家会清空当前购物车，订单只能包含同一商家的商品。
-6. 访客默认可浏览和微信支付；只有点击“明确登录并绑定会员”后才附带会员令牌并使用共享余额。
+1. AppID 当前为占位 `wx0000000000000002`，必须替换 `frontend_2/src/manifest.json` 中的 `mp-weixin.appid`，且与购票端不同。
+2. 二维码 scene 建议为 `ROOM-01` 至 `ROOM-17`；也可用链接 `?scene=ROOM-01`。无参数时开发默认 `ROOM-01`，进入后也可在页面顶部直接选择送餐房间。
+3. 真机预览时 `frontend_2/src/config.js` 使用电脑局域网 IP；手机与电脑需在同一 Wi-Fi，后端用 `--host 0.0.0.0` 启动并允许防火墙入站。电脑 IP 改变后需同步修改 `lanApiBase`。
+4. 点餐页左侧列出营业商家，右侧展示所选商家的商品；切换商家会清空当前购物车，订单只能包含同一商家的商品。
+5. 构建后导入 `frontend_2/dist/dev/mp-weixin` 或 `frontend_2/dist/build/mp-weixin`。
 
 ```powershell
 Set-Location frontend_2
+npm install
 npm test
+npm run dev:mp-weixin
+npm run build:mp-weixin
 ```
 
-WXML 渲染、真实微信登录和真实微信支付必须在微信开发者工具与已配置 AppID/商户号下另行验证，目前没有声称完成。
+uni-app 编译通过、静态测试通过均不等于真机业务验收。WXML 渲染、真实微信登录和真实微信支付仍需在开发者工具与已配置 AppID/商户号下验证。
 
 ## 本地设备服务
 
@@ -131,8 +143,8 @@ $env:WENQUAN_MOCK_RESULT="SUCCEEDED"
 | 点餐、手牌/押金、设备领域、会员 API | `pytest tests/test_dining.py tests/test_access.py tests/test_devices.py tests/test_member_api.py -q` | 9 passed |
 | 运营 / 管理 / 商家商品 / 人工退款 API | `pytest tests/test_operations_api.py -q` | 6 passed |
 | Alembic | `alembic upgrade head` → `downgrade base` → `upgrade head` | 通过（SQLite 迁移验证） |
-| 购票会员小程序 | `cd frontend_1; npm test` | 4 passed |
-| 点餐小程序 | `cd frontend_2; npm test` | 4 passed |
+| 购票会员 uni-app | `cd frontend_1; npm test; npm run build:mp-weixin` | 4 passed，微信构建完成 |
+| 点餐 uni-app | `cd frontend_2; npm test; npm run build:mp-weixin` | 4 passed，微信构建完成 |
 | 运营 Web | `cd frontend_web; npm test; npm run typecheck; npm run build` | 8 passed，类型检查与生产构建通过 |
 | 设备服务 | `cd device_service; ..\.venv\Scripts\python.exe -m pytest -q` | 5 passed |
 

@@ -1,6 +1,6 @@
-const test = require("node:test")
-const assert = require("node:assert/strict")
-const { updateCart, cartTotal } = require("../utils/cart")
+import test from "node:test"
+import assert from "node:assert/strict"
+import { updateCart, cartTotal } from "../src/utils/cart.js"
 
 test("cart never goes below zero and totals integer cents", () => {
   const items = [{ price_cents: 3800 }, { price_cents: 1600 }]

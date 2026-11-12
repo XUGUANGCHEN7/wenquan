@@ -1,6 +1,6 @@
-const test = require("node:test")
-const assert = require("node:assert/strict")
-const { formatMoney, dateInput, dateLabel } = require("../utils/money")
+import test from "node:test"
+import assert from "node:assert/strict"
+import { formatMoney, dateInput, dateLabel } from "../src/utils/money.js"
 
 test("formats integer cents without floating point", () => {
   assert.equal(formatMoney(2900), "29.00")

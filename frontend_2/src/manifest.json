@@ -1,0 +1,17 @@
+{
+  "name": "私汤点餐",
+  "appid": "__UNI__SHUNAN_DINING",
+  "description": "蜀南温泉独立房间点餐小程序",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "mp-weixin": {
+    "appid": "wx0000000000000002",
+    "setting": {
+      "urlCheck": false,
+      "es6": true,
+      "minified": true
+    },
+    "usingComponents": true
+  }
+}

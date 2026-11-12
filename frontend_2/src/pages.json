@@ -1,0 +1,25 @@
+{
+  "pages": [
+    { "path": "pages/room/index", "style": { "navigationBarTitleText": "私汤点餐" } },
+    { "path": "pages/orders/index", "style": { "navigationBarTitleText": "点餐订单" } },
+    { "path": "pages/mine/index", "style": { "navigationBarTitleText": "会员" } }
+  ],
+  "globalStyle": {
+    "navigationBarBackgroundColor": "#F7F4EC",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "私汤点餐",
+    "backgroundColor": "#F7F4EC",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#929A96",
+    "selectedColor": "#3E8E7E",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      { "pagePath": "pages/room/index", "text": "点餐" },
+      { "pagePath": "pages/orders/index", "text": "订单" },
+      { "pagePath": "pages/mine/index", "text": "会员" }
+    ]
+  }
+}

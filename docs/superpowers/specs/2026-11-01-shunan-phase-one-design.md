@@ -5,13 +5,13 @@
 
 ## 1. 意图与范围
 
-基于 `.clinerules/project-rules.md`，把现有原生小程序改造成购票会员端 `frontend_1`，新增独立房间点餐端 `frontend_2`、前台及商家 Web `frontend_web`、FastAPI/MySQL 后端和 Windows 本地设备服务。目标是交付可运行、可测试的一期业务骨架，而非把 Mock 支付或硬件模拟包装成生产验收。
+基于 `.clinerules/project-rules.md`，把现有小程序（当前已迁移为 uni-app + Vue 3）改造成购票会员端 `frontend_1`，新增独立房间点餐端 `frontend_2`、前台及商家 Web `frontend_web`、FastAPI/MySQL 后端和 Windows 本地设备服务。目标是交付可运行、可测试的一期业务骨架，而非把 Mock 支付或硬件模拟包装成生产验收。
 
 一期包含会员身份映射、门票与单次人工核验、私汤连续场次库存与到店分房、统一储值账本、独立点餐、支付/退款状态、逐枚手牌押金、柜位和设备任务、商家出餐、异常看板及报表。不做闸机、场内挂账、自动退余额、默认取消/扣押金政策，也不假定已有微信支付商户能力或 Windows SDK。
 
 ## 2. 已选方案与约束
 
-采用 FastAPI 模块化单体、SQLAlchemy 2/Alembic、MySQL 8；测试可用 SQLite 快速运行领域测试，并用独立 MySQL 容器执行约束和并发集成测试。两个小程序继续使用微信原生 WXML/WXSS/JavaScript；Web 使用 Vue 3、TypeScript、Vite、Vue Router 和 Pinia。设备服务使用 Python，定义适配器接口并仅提供显式 Mock 实现，真实 DLL 语言与签名待 SDK 确认。
+采用 FastAPI 模块化单体、SQLAlchemy 2/Alembic、MySQL 8；测试可用 SQLite 快速运行领域测试，并用独立 MySQL 容器执行约束和并发集成测试。两个小程序使用 uni-app + Vue 3（编译到微信 `mp-weixin`）；Web 使用 Vue 3、TypeScript、Vite、Vue Router 和 Pinia。设备服务使用 Python，定义适配器接口并仅提供显式 Mock 实现，真实 DLL 语言与签名待 SDK 确认。
 
 所有端共用 `/api/v1`；金额只传输整数分。服务端决定价格、库存、余额、支付及权限。开发登录、支付、微信身份和设备均清楚标注为开发适配器；生产环境禁用不安全的开发默认值。AppSecret、支付私钥和设备密钥仅由服务端环境变量提供。
 

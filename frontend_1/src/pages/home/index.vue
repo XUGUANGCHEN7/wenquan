@@ -1,0 +1,91 @@
+<script setup>
+const hero = "https://images.unsplash.com/photo-1734244362947-749db3efc7b7?auto=format&fit=crop&w=1200&q=85"
+const room = "https://images.unsplash.com/photo-1712232907812-4bd219a99a49?auto=format&fit=crop&w=800&q=85"
+
+const goTickets = () => uni.navigateTo({ url: "/pages/tickets/index" })
+const goPrivateRoom = () => uni.navigateTo({ url: "/pages/private-room/index" })
+const goOrders = () => uni.switchTab({ url: "/pages/orders/index" })
+const goWallet = () => uni.navigateTo({ url: "/pages/wallet/index" })
+const goMine = () => uni.switchTab({ url: "/pages/mine/index" })
+</script>
+
+<template>
+  <view class="page home">
+    <view class="hero">
+      <image mode="aspectFill" :src="hero" />
+      <view class="hero-shade" />
+      <view class="status-space" />
+      <view class="hero-copy">
+        <text class="eyebrow">SHUNAN HOT SPRING</text>
+        <text class="hero-title">山水之间，泡一池好汤</text>
+        <text class="hero-desc">天然温泉 · 城市里的松弛时刻</text>
+      </view>
+    </view>
+
+    <view class="content">
+      <view class="welcome">
+        <view>
+          <text class="en">CHOOSE YOUR JOURNEY</text>
+          <text class="title">今天想怎么泡？</text>
+        </view>
+        <text class="hours">营业时间 09:00—22:00</text>
+      </view>
+
+      <view class="journey">
+        <button class="journey-card public" @tap="goTickets">
+          <text class="journey-en">PUBLIC BATH</text>
+          <text class="journey-title">购买门票</text>
+          <text class="journey-price">¥29 起　›</text>
+          <text class="journey-icon">票</text>
+        </button>
+        <button class="journey-card private" @tap="goPrivateRoom">
+          <text class="journey-en">PRIVATE ONSEN</text>
+          <text class="journey-title">预约私汤房</text>
+          <text class="journey-price">¥120 / 场　›</text>
+          <text class="journey-icon">汤</text>
+        </button>
+      </view>
+
+      <view class="shortcuts">
+        <button @tap="goOrders">
+          <text class="shortcut-icon orange">单</text>
+          <text class="shortcut-title">我的订单</text>
+        </button>
+        <button @tap="goWallet">
+          <text class="shortcut-icon gold">充</text>
+          <text class="shortcut-title">储值中心</text>
+        </button>
+        <button @tap="goMine">
+          <text class="shortcut-icon green">我</text>
+          <text class="shortcut-title">会员中心</text>
+          <text class="shortcut-desc">统一会员与余额</text>
+        </button>
+      </view>
+
+      <view class="section-head">
+        <view>
+          <text class="en">PRIVATE ONSEN</text>
+          <text class="title">热门私汤房</text>
+        </view>
+        <text class="more" @tap="goPrivateRoom">查看房型　›</text>
+      </view>
+
+      <view class="room-card" @tap="goPrivateRoom">
+        <image mode="aspectFill" :src="room" />
+        <view class="room-info">
+          <text class="room-name">私汤连续场次预约</text>
+          <text class="room-desc">120分钟 / 场 · 含桑拿 · 到店后由前台分房</text>
+          <text class="room-price">
+            ¥120
+            <text>/ 场</text>
+          </text>
+        </view>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+  </view>
+</template>
+
+<style>
+@import "./style.css";
+</style>
