@@ -10,7 +10,7 @@ from app.core.auth import AuthContext, Role, require_roles
 from app.core.database import get_db
 from app.core.errors import ApiError
 from app.modules.audit import audit
-from app.modules.catalog.models import BusinessConfig, RechargeActivity, TicketPriceRule
+from app.modules.catalog.models import BusinessConfig, RechargeActivity, RechargeActivityWindow, TicketPriceRule
 from app.modules.common import new_id, utcnow
 from app.modules.dining.models import FoodOrder, FoodOrderItem, MenuItem, Merchant, RoomQrCode
 
@@ -25,12 +25,50 @@ class PriceRequest(BaseModel):
     note: str = Field(default="", max_length=200)
 
 
+class BusinessHoursRequest(BaseModel):
+    opens_at: str = Field(pattern=r"^(?:[01]\d|2[0-3]):[0-5]\d$")
+    closes_at: str = Field(pattern=r"^(?:[01]\d|2[0-3]):[0-5]\d$")
+    rest_today: bool
+    business_date: date | None = None
+
+
+@router.post("/business-hours")
+def save_business_hours(payload: BusinessHoursRequest, request: Request, auth: AdminAuth,
+                        session: Session = Depends(get_db)):
+    from app.modules.catalog.business_hours import business_hours, now_beijing
+
+    opening = int(payload.opens_at[:2]) * 60 + int(payload.opens_at[3:])
+    closing = int(payload.closes_at[:2]) * 60 + int(payload.closes_at[3:])
+    if opening >= closing:
+        raise ApiError(422, "BUSINESS_HOURS_INVALID", "结束时间必须晚于开始时间，暂不支持跨日营业")
+    today = now_beijing().date()
+    if payload.business_date is not None and payload.business_date != today:
+        raise ApiError(409, "BUSINESS_DATE_CHANGED", "营业日期已变更，请刷新后重试")
+    values = {"business_open_minutes": opening, "business_close_minutes": closing,
+              "business_rest_date": int(today.strftime("%Y%m%d")) if payload.rest_today else 0}
+    for key, value in values.items():
+        record = session.get(BusinessConfig, key, with_for_update=True)
+        before = str(record.value) if record else None
+        if record is None:
+            record = BusinessConfig(key=key, value=value, description="温泉营业时间与今日休息配置")
+            session.add(record)
+        else:
+            record.value = value
+        audit(session, actor=auth.role, action="CONFIG_UPDATED", entity_type="business_config",
+              entity_id=key, before=before, after=str(value), reason="营业时间与今日休息配置",
+              request_id=request.state.request_id)
+    session.commit()
+    return business_hours(session)
+
+
 class ActivityRequest(BaseModel):
     id: str | None = Field(default=None, max_length=64)
     name: str = Field(min_length=1, max_length=80)
     principal_cents: int = Field(gt=0)
     gift_cents: int = Field(ge=0)
     active: bool = True
+    starts_on: date | None = None
+    ends_on: date | None = None
 
 
 class MenuItemRequest(BaseModel):
@@ -231,22 +269,36 @@ def update_ticket_price(visit_date: date, payload: PriceRequest, request: Reques
 @router.post("/recharge-activities")
 def update_activity(payload: ActivityRequest, request: Request, auth: AdminAuth,
                     session: Session = Depends(get_db)):
+    if payload.starts_on and payload.ends_on and payload.ends_on < payload.starts_on:
+        raise ApiError(422, "ACTIVITY_DATE_INVALID", "活动结束日期不能早于开始日期")
     activity_id = payload.id or new_id("act")
     activity = session.get(RechargeActivity, activity_id, with_for_update=True)
     before = f"{activity.principal_cents}:{activity.gift_cents}:{activity.active}" if activity else None
+    values = payload.model_dump(exclude={"id", "starts_on", "ends_on"})
     if activity is None:
-        activity = RechargeActivity(id=activity_id, **payload.model_dump(exclude={"id"}))
+        activity = RechargeActivity(id=activity_id, **values)
         session.add(activity)
     else:
-        for key, value in payload.model_dump(exclude={"id"}).items():
+        for key, value in values.items():
             setattr(activity, key, value)
+    window = session.get(RechargeActivityWindow, activity_id)
+    if payload.starts_on is None and payload.ends_on is None:
+        if window:
+            session.delete(window)
+    else:
+        if window is None:
+            window = RechargeActivityWindow(activity_id=activity_id)
+            session.add(window)
+        window.starts_on = payload.starts_on
+        window.ends_on = payload.ends_on
     audit(session, actor=auth.role, action="RECHARGE_ACTIVITY_UPDATED", entity_type="recharge_activity",
           entity_id=activity.id, before=before,
           after=f"{activity.principal_cents}:{activity.gift_cents}:{activity.active}",
           reason="Administrator configuration", request_id=request.state.request_id)
     session.commit()
     return {"id": activity.id, "name": activity.name, "principal_cents": activity.principal_cents,
-            "gift_cents": activity.gift_cents, "active": activity.active}
+            "gift_cents": activity.gift_cents, "active": activity.active,
+            "starts_on": payload.starts_on, "ends_on": payload.ends_on}
 
 
 @router.post("/menu-items/{item_id}")

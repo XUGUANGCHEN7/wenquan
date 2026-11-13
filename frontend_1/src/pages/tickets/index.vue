@@ -102,28 +102,66 @@ async function submit() {
     <view class="tips">平日 29 元，周末及后台配置节假日 49 元；每票仅支持一次人工核验入园，儿童规则与价格以服务端配置为准。</view>
 
     <view class="form-section">
-      <view class="step-head"><text>01</text><view><text>选择入园日期</text><text>价格由服务端按日期返回</text></view></view>
+      <view class="step-head">
+        <text>01</text>
+        <view>
+          <text>选择入园日期</text>
+          <text>价格由服务端按日期返回</text>
+        </view>
+      </view>
       <scroll-view class="dates" scroll-x>
-        <button v-for="(item, index) in dates" :key="item.value" :class="{ active: dateIndex === index }" @tap="selectDate(index)">
-          <text>{{ item.label }}</text><text>{{ item.display }}</text>
+        <button
+          v-for="(item, index) in dates"
+          :key="item.value"
+          :class="{ active: dateIndex === index }"
+          @tap="selectDate(index)"
+        >
+          <text>{{ item.label }}</text>
+          <text>{{ item.display }}</text>
         </button>
       </scroll-view>
     </view>
 
     <view class="form-section">
-      <view class="step-head"><text>02</text><view><text>选择购票人数</text><text>支付后逐人生成独立票券</text></view></view>
-      <view class="guest">
-        <view><text>成人票 · ¥{{ adultDisplay }}</text><text>成交时保存价格快照</text></view>
-        <view class="counter"><button @tap="changeCount('adult', -1)">−</button><text>{{ adult }}</text><button @tap="changeCount('adult', 1)">＋</button></view>
+      <view class="step-head">
+        <text>02</text>
+        <view>
+          <text>选择购票人数</text>
+          <text>支付后逐人生成独立票券</text>
+        </view>
       </view>
       <view class="guest">
-        <view><text>儿童票 · ¥{{ childDisplay }}</text><text>适用规则以现场及后台配置为准</text></view>
-        <view class="counter"><button @tap="changeCount('child', -1)">−</button><text>{{ child }}</text><button @tap="changeCount('child', 1)">＋</button></view>
+        <view>
+          <text>成人票 · ¥{{ adultDisplay }}</text>
+          <text>成交时保存价格快照</text>
+        </view>
+        <view class="counter">
+          <button @tap="changeCount('adult', -1)">−</button>
+          <text>{{ adult }}</text>
+          <button @tap="changeCount('adult', 1)">＋</button>
+        </view>
+      </view>
+      <view class="guest">
+        <view>
+          <text>儿童票 · ¥{{ childDisplay }}</text>
+          <text>适用规则以现场及后台配置为准</text>
+        </view>
+        <view class="counter">
+          <button @tap="changeCount('child', -1)">−</button>
+          <text>{{ child }}</text>
+          <button @tap="changeCount('child', 1)">＋</button>
+        </view>
       </view>
     </view>
 
     <view class="form-section">
-      <view class="step-head"><text>03</text><view><text>支付方式</text><text>支付结果以服务端查询为准</text></view></view>
+      <view class="step-head">
+        <text>03</text>
+        <view>
+          <text>支付方式</text>
+          <text>支付结果以服务端查询为准</text>
+        </view>
+      </view>
       <view class="payment-methods">
         <button :class="{ active: paymentMethod === 'WECHAT' }" @tap="selectPayment('WECHAT')">微信支付</button>
         <button :class="{ active: paymentMethod === 'BALANCE' }" @tap="selectPayment('BALANCE')">会员余额</button>

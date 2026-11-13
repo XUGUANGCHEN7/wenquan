@@ -1,10 +1,11 @@
 <script setup>
 import { computed, ref } from "vue"
 import { onLoad } from "@dcloudio/uni-app"
+import config from "../../config"
 import { request, payOrder, showError } from "../../utils/api"
 import { formatMoney, dateInput, dateLabel } from "../../utils/money"
 
-const hero = "https://images.unsplash.com/photo-1712232907812-4bd219a99a49?auto=format&fit=crop&w=1200&q=85"
+const hero = `${config.mediaBase}/home-carousel/home-02.png`
 const dates = ref([])
 const dateIndex = ref(0)
 const slots = ref([])

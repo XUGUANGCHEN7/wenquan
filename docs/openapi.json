@@ -157,6 +157,132 @@
         ]
       }
     },
+    "/api/v1/auth/wechat/login": {
+      "post": {
+        "tags": [
+          "member-auth"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_v1_auth_wechat_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/wechat/register": {
+      "post": {
+        "tags": [
+          "member-auth"
+        ],
+        "summary": "Register",
+        "operationId": "register_api_v1_auth_wechat_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/members/me": {
+      "get": {
+        "tags": [
+          "member-auth"
+        ],
+        "summary": "Me",
+        "operationId": "me_api_v1_members_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "member-auth"
+        ],
+        "summary": "Logout",
+        "operationId": "logout_api_v1_auth_logout_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
     "/api/v1/catalog/ticket-prices": {
       "get": {
         "tags": [
@@ -3089,6 +3215,22 @@
         ],
         "title": "IssueRequest"
       },
+      "LoginRequest": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Code"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code"
+        ],
+        "title": "LoginRequest"
+      },
       "MenuItemPayload": {
         "properties": {
           "merchant_id": {
@@ -3335,6 +3477,41 @@
           "reason"
         ],
         "title": "RefundRequest"
+      },
+      "RegisterRequest": {
+        "properties": {
+          "registration_token": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 20,
+            "title": "Registration Token"
+          },
+          "phone_code": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Phone Code"
+          },
+          "nickname": {
+            "type": "string",
+            "maxLength": 80,
+            "title": "Nickname",
+            "default": ""
+          },
+          "consent": {
+            "type": "boolean",
+            "const": true,
+            "title": "Consent"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "registration_token",
+          "phone_code",
+          "consent"
+        ],
+        "title": "RegisterRequest"
       },
       "ResultRequest": {
         "properties": {

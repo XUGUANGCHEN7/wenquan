@@ -1,28 +1,93 @@
 {
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^wd-(.*)": "@wot-ui/ui/components/wd-$1/wd-$1.vue"
+    }
+  },
   "pages": [
-    { "path": "pages/home/index", "style": { "navigationBarTitleText": "蜀南温泉" } },
-    { "path": "pages/tickets/index", "style": { "navigationBarTitleText": "公共浴池门票" } },
-    { "path": "pages/private-room/index", "style": { "navigationBarTitleText": "私汤预约" } },
-    { "path": "pages/orders/index", "style": { "navigationBarTitleText": "我的订单" } },
-    { "path": "pages/mine/index", "style": { "navigationBarTitleText": "会员中心" } },
-    { "path": "pages/wallet/index", "style": { "navigationBarTitleText": "储值中心" } }
+    {
+      "path": "pages/home/index",
+      "style": {
+        "navigationBarTitleText": "蜀南温泉",
+        "navigationStyle": "custom",
+        "backgroundColor": "#F8F6F1"
+      }
+    },
+    {
+      "path": "pages/tickets/index",
+      "style": {
+        "navigationBarTitleText": "公共浴池门票"
+      }
+    },
+    {
+      "path": "pages/private-room/index",
+      "style": {
+        "navigationBarTitleText": "私汤预约"
+      }
+    },
+    {
+      "path": "pages/orders/index",
+      "style": {
+        "navigationBarTitleText": "我的订单"
+      }
+    },
+    {
+      "path": "pages/mine/index",
+      "style": {
+        "navigationBarTitleText": "会员中心"
+      }
+    },
+    {
+      "path": "pages/wallet/index",
+      "style": {
+        "navigationBarTitleText": "储值中心"
+      }
+    },
+    {
+      "path": "pages/login/index",
+      "style": {
+        "navigationBarTitleText": "会员登录"
+      }
+    },
+    {
+      "path": "pages/account-info/index",
+      "style": {
+        "navigationBarTitleText": "手机号使用说明"
+      }
+    }
   ],
   "globalStyle": {
-    "navigationBarBackgroundColor": "#F7F4EC",
+    "navigationBarBackgroundColor": "#F8F6F1",
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "蜀南温泉",
-    "backgroundColor": "#F7F4EC",
+    "backgroundColor": "#F8F6F1",
     "backgroundTextStyle": "dark"
   },
   "tabBar": {
-    "color": "#929A96",
-    "selectedColor": "#3E8E7E",
-    "backgroundColor": "#FFFFFF",
+    "color": "#8D9793",
+    "selectedColor": "#246B61",
+    "backgroundColor": "#FFFDF9",
     "borderStyle": "white",
     "list": [
-      { "pagePath": "pages/home/index", "text": "首页" },
-      { "pagePath": "pages/orders/index", "text": "订单" },
-      { "pagePath": "pages/mine/index", "text": "我的" }
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "static/tabbar/home.png",
+        "selectedIconPath": "static/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/orders/index",
+        "text": "订单",
+        "iconPath": "static/tabbar/orders.png",
+        "selectedIconPath": "static/tabbar/orders-active.png"
+      },
+      {
+        "pagePath": "pages/mine/index",
+        "text": "我的",
+        "iconPath": "static/tabbar/mine.png",
+        "selectedIconPath": "static/tabbar/mine-active.png"
+      }
     ]
   }
 }

@@ -6,6 +6,7 @@ export default {
 }
 </script>
 
-<style>
-@import "./styles/theme.css";
+<style lang="scss">
+@use "@wot-ui/ui/styles/theme/index.scss" as *;
+@use "./styles/theme.scss";
 </style>

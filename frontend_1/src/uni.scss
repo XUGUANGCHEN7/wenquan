@@ -1,6 +1,23 @@
-$uni-color-primary: #3e8e7e;
-$uni-color-success: #3e8e7e;
+$sn-green: #246b61;
+$sn-green-deep: #173f39;
+$sn-green-soft: #eaf3ef;
+$sn-gold: #be9862;
+$sn-gold-ink: #8a6a3c;
+$sn-gold-soft: #f4ead9;
+$sn-paper: #f8f6f1;
+$sn-card: #ffffff;
+$sn-ink: #21332e;
+$sn-muted: #5f7069;
+$sn-line: #e8e1d4;
+$sn-radius-sm: 16rpx;
+$sn-radius-md: 26rpx;
+$sn-radius-lg: 36rpx;
+$sn-shadow-card: 0 18rpx 50rpx rgba(31, 61, 53, 0.07);
+$sn-shadow-soft: 0 10rpx 28rpx rgba(31, 61, 53, 0.06);
+
+$uni-color-primary: $sn-green;
+$uni-color-success: $sn-green;
 $uni-color-warning: #9b6b2d;
 $uni-color-error: #a64938;
-$uni-bg-color: #f7f4ec;
-$uni-text-color: #26342f;
+$uni-bg-color: $sn-paper;
+$uni-text-color: $sn-ink;

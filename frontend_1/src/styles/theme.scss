@@ -1,0 +1,169 @@
+page,
+.wd-root-portal {
+  --sn-green: #246b61;
+  --sn-green-deep: #173f39;
+  --sn-green-soft: #eaf3ef;
+  --sn-gold: #be9862;
+  /* 金色装饰用于图形；浅底文字使用更深的 gold-ink。 */
+  --sn-gold-ink: #8a6a3c;
+  --sn-gold-soft: #f4ead9;
+  --sn-paper: #f8f6f1;
+  --sn-card: #ffffff;
+  --sn-ink: #21332e;
+  --sn-muted: #5f7069;
+  --sn-line: #e8e1d4;
+  --sn-shadow-card: 0 18rpx 50rpx rgba(31, 61, 53, 0.07);
+  --sn-shadow-soft: 0 10rpx 28rpx rgba(31, 61, 53, 0.06);
+
+  --green: var(--sn-green);
+  --green-dark: var(--sn-green-deep);
+  --paper: var(--sn-paper);
+  --line: var(--sn-line);
+  --gold: var(--sn-gold);
+  --orange: #c78752;
+
+  --wot-primary-1: #eef7f4;
+  --wot-primary-2: #d8ece6;
+  --wot-primary-3: #b3d9cf;
+  --wot-primary-4: #7db9ab;
+  --wot-primary-5: #3f8c7d;
+  --wot-primary-6: #246b61;
+  --wot-primary-7: #1a5149;
+  --wot-primary-8: #123d37;
+  --wot-success-main: #2c7568;
+  --wot-success-hover: #246b61;
+  --wot-success-clicked: #1a5149;
+  --wot-warning-main: #a77d43;
+  --wot-warning-hover: #be9862;
+  --wot-warning-clicked: #8a6433;
+  --wot-tag-warning-color: #8a6433;
+  --wot-danger-main: #a64938;
+  --wot-danger-hover: #b95a48;
+  --wot-danger-clicked: #87392b;
+  --wot-text-main: #21332e;
+  --wot-text-secondary: #5f7069;
+  --wot-text-auxiliary: #5f7069;
+  --wot-text-placeholder: #9aa39e;
+  --wot-border-main: #e8e1d4;
+  --wot-border-light: #f0ebe1;
+  --wot-filled-bottom: #f8f6f1;
+  --wot-filled-content: #f1ece2;
+  min-height: 100%;
+  color: var(--sn-ink);
+  background: var(--sn-paper);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 28rpx;
+  -webkit-font-smoothing: antialiased;
+}
+
+view,
+text,
+image,
+button,
+scroll-view,
+swiper,
+swiper-item {
+  box-sizing: border-box;
+}
+
+button {
+  padding: 0;
+  line-height: 1;
+}
+
+button::after {
+  border: 0;
+}
+
+.page {
+  min-height: 100vh;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.safe-bottom {
+  height: env(safe-area-inset-bottom);
+}
+
+.sn-serif {
+  font-family: "STSong", "Songti SC", serif;
+}
+
+.sn-eyebrow {
+  display: block;
+  color: var(--sn-gold-ink);
+  font-size: 18rpx;
+  letter-spacing: 4rpx;
+  line-height: 1.4;
+}
+
+.sn-card {
+  border: 1rpx solid var(--sn-line);
+  border-radius: 30rpx;
+  background: var(--sn-card);
+  box-shadow: var(--sn-shadow-card);
+}
+
+/* 其它页面沿用的基础样式，改用新的品牌 token。 */
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin: 36rpx 30rpx 20rpx;
+}
+
+.section-head .en {
+  display: block;
+  margin-bottom: 6rpx;
+  color: var(--sn-gold-ink);
+  font-size: 18rpx;
+  letter-spacing: 3rpx;
+}
+
+.section-head .title {
+  display: block;
+  font-family: "STSong", "Songti SC", serif;
+  font-size: 36rpx;
+  font-weight: 600;
+}
+
+.section-head .more {
+  color: var(--sn-muted);
+  font-size: 22rpx;
+}
+
+.primary-button {
+  height: 92rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 46rpx;
+  color: #fff;
+  background: var(--sn-green);
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.payment-methods {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.payment-methods button {
+  min-height: 88rpx;
+  border: 1rpx solid var(--sn-line);
+  border-radius: 18rpx;
+  color: #63716b;
+  background: #fffdf8;
+  font-size: 26rpx;
+}
+
+.payment-methods button.active {
+  border: 3rpx solid var(--sn-green);
+  color: var(--sn-green-deep);
+  background: var(--sn-green-soft);
+}
+
+button[disabled] {
+  opacity: 0.55;
+}

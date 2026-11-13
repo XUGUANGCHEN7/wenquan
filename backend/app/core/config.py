@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,6 +20,9 @@ class Settings(BaseSettings):
     dev_admin_token: str = "dev-admin"
     device_service_token: str = "dev-device-service-change-me"
     payment_provider: str = "mock"
+    wechat_ticket_appid: str = ""
+    wechat_ticket_appsecret: SecretStr | None = None
+    member_session_seconds: int = Field(default=604800, ge=300, le=2592000)
 
     @property
     def is_production(self) -> bool:

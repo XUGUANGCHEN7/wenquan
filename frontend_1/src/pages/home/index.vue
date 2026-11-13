@@ -1,86 +1,191 @@
 <script setup>
-const hero = "https://images.unsplash.com/photo-1734244362947-749db3efc7b7?auto=format&fit=crop&w=1200&q=85"
-const room = "https://images.unsplash.com/photo-1712232907812-4bd219a99a49?auto=format&fit=crop&w=800&q=85"
+import { computed, ref } from "vue"
+import { onHide, onShow, onUnload } from "@dcloudio/uni-app"
+import HomeHero from "../../components/HomeHero.vue"
+import JourneyCard from "../../components/JourneyCard.vue"
+import MemberGuideCard from "../../components/MemberGuideCard.vue"
+import { getToken } from "../../utils/session.js"
+import { request } from "../../utils/api.js"
+import { businessPresentation } from "../../utils/business-hours.js"
+import { formatMoney } from "../../utils/money"
+
+const businessConfig = ref(null)
+const business = computed(() => businessPresentation(businessConfig.value))
+let businessTimer
+let businessVersion = 0
+
+function stopBusinessRefresh() {
+  businessVersion += 1
+  clearTimeout(businessTimer)
+}
+
+async function refreshBusiness(version) {
+  let delay = 60
+  try {
+    const data = await request("/catalog/business-hours", { auth: false })
+    if (version !== businessVersion) return
+    businessConfig.value = data
+    delay = data.refresh_after_seconds || 60
+  } catch {
+    if (version !== businessVersion) return
+    businessConfig.value = null
+  }
+  businessTimer = setTimeout(() => refreshBusiness(version), Math.max(1, Math.min(60, delay)) * 1000)
+}
+
+onShow(() => {
+  stopBusinessRefresh()
+  businessConfig.value = null
+  refreshBusiness(businessVersion)
+})
+onHide(stopBusinessRefresh)
+onUnload(stopBusinessRefresh)
+
+const memberProfile = ref(null)
+const walletBalance = ref("")
+const walletStatus = ref("guest")
+let memberVersion = 0
+const balanceDisplay = computed(() => {
+  if (!memberProfile.value) return "登录后查看余额"
+  if (walletStatus.value === "loading") return "加载中…"
+  if (walletStatus.value === "error") return "余额读取失败"
+  return `¥${walletBalance.value}`
+})
+const isBalanceMessage = computed(() => !memberProfile.value || walletStatus.value !== "ready")
+
+async function refreshMember() {
+  const version = ++memberVersion
+  if (!getToken()) {
+    memberProfile.value = null
+    walletBalance.value = ""
+    walletStatus.value = "guest"
+    return
+  }
+  const stored = uni.getStorageSync("member_profile") || {}
+  memberProfile.value = {
+    nickname: stored.nickname || "会员",
+  }
+  walletStatus.value = "loading"
+  try {
+    const wallet = await request("/wallet/balance")
+    if (version !== memberVersion) return
+    if (!Number.isInteger(wallet?.available_cents) || wallet.available_cents < 0) {
+      throw new Error("invalid wallet balance")
+    }
+    walletBalance.value = formatMoney(wallet.available_cents)
+    walletStatus.value = "ready"
+  } catch {
+    if (version !== memberVersion) return
+    // Keep a readable error state; never present a failed request as ¥0.00.
+    walletStatus.value = "error"
+  }
+}
+
+function goMemberAction() {
+  if (memberProfile.value) {
+    goMine()
+    return
+  }
+  uni.navigateTo({
+    url: "/pages/login/index?returnTo=" + encodeURIComponent("/pages/home/index"),
+  })
+}
+
+onShow(refreshMember)
+refreshMember()
+
+const heroSlides = [
+  { image: "/static/home-carousel/home-01.jpg" },
+  { image: "/static/home-carousel/home-02.jpg" },
+  { image: "/static/home-carousel/home-03.jpg" },
+  { image: "/static/home-carousel/home-04.jpg" },
+]
 
 const goTickets = () => uni.navigateTo({ url: "/pages/tickets/index" })
 const goPrivateRoom = () => uni.navigateTo({ url: "/pages/private-room/index" })
-const goOrders = () => uni.switchTab({ url: "/pages/orders/index" })
 const goWallet = () => uni.navigateTo({ url: "/pages/wallet/index" })
 const goMine = () => uni.switchTab({ url: "/pages/mine/index" })
+
+function goRecharge() {
+  if (!memberProfile.value) {
+    uni.navigateTo({
+      url: "/pages/login/index?returnTo=" + encodeURIComponent("/pages/home/index"),
+    })
+    return
+  }
+  goWallet()
+}
 </script>
 
 <template>
   <view class="page home">
-    <view class="hero">
-      <image mode="aspectFill" :src="hero" />
-      <view class="hero-shade" />
-      <view class="status-space" />
-      <view class="hero-copy">
-        <text class="eyebrow">SHUNAN HOT SPRING</text>
-        <text class="hero-title">山水之间，泡一池好汤</text>
-        <text class="hero-desc">天然温泉 · 城市里的松弛时刻</text>
-      </view>
-    </view>
+    <HomeHero :slides="heroSlides" />
 
-    <view class="content">
+    <view class="home-content">
       <view class="welcome">
-        <view>
-          <text class="en">CHOOSE YOUR JOURNEY</text>
-          <text class="title">今天想怎么泡？</text>
+        <view class="business-status" :class="{ 'is-open': business.isOpen }">
+          <view class="business-dot" />
+          <text>{{ business.label }}</text>
         </view>
-        <text class="hours">营业时间 09:00—22:00</text>
-      </view>
-
-      <view class="journey">
-        <button class="journey-card public" @tap="goTickets">
-          <text class="journey-en">PUBLIC BATH</text>
-          <text class="journey-title">购买门票</text>
-          <text class="journey-price">¥29 起　›</text>
-          <text class="journey-icon">票</text>
-        </button>
-        <button class="journey-card private" @tap="goPrivateRoom">
-          <text class="journey-en">PRIVATE ONSEN</text>
-          <text class="journey-title">预约私汤房</text>
-          <text class="journey-price">¥120 / 场　›</text>
-          <text class="journey-icon">汤</text>
-        </button>
-      </view>
-
-      <view class="shortcuts">
-        <button @tap="goOrders">
-          <text class="shortcut-icon orange">单</text>
-          <text class="shortcut-title">我的订单</text>
-        </button>
-        <button @tap="goWallet">
-          <text class="shortcut-icon gold">充</text>
-          <text class="shortcut-title">储值中心</text>
-        </button>
-        <button @tap="goMine">
-          <text class="shortcut-icon green">我</text>
-          <text class="shortcut-title">会员中心</text>
-          <text class="shortcut-desc">统一会员与余额</text>
-        </button>
-      </view>
-
-      <view class="section-head">
-        <view>
-          <text class="en">PRIVATE ONSEN</text>
-          <text class="title">热门私汤房</text>
+        <view class="welcome-hours">
+          <view class="business-clock" />
+          <text>{{ business.hours }}</text>
         </view>
-        <text class="more" @tap="goPrivateRoom">查看房型　›</text>
       </view>
 
-      <view class="room-card" @tap="goPrivateRoom">
-        <image mode="aspectFill" :src="room" />
-        <view class="room-info">
-          <text class="room-name">私汤连续场次预约</text>
-          <text class="room-desc">120分钟 / 场 · 含桑拿 · 到店后由前台分房</text>
-          <text class="room-price">
-            ¥120
-            <text>/ 场</text>
-          </text>
+      <MemberGuideCard :profile="memberProfile" @action="goMemberAction" />
+
+      <view class="journey-grid">
+        <JourneyCard
+          image="/static/journey/tickets.jpg"
+          title="购买门票"
+          description="温泉畅享，即买即用"
+          @select="goTickets"
+        />
+        <view class="journey-divider" />
+        <JourneyCard
+          image="/static/journey/private-room.jpg"
+          title="预约私汤房"
+          description="独立汤池，静享时光"
+          @select="goPrivateRoom"
+        />
+      </view>
+
+      <view class="member-card">
+        <view class="wallet-head">
+          <view class="wallet-label">
+            <view class="wallet-icon">
+              <view class="wallet-line" />
+              <view class="wallet-dot" />
+            </view>
+            <text>我的会员余额</text>
+          </view>
+          <view class="wallet-scope">
+            <text class="scope-symbol">♨</text>
+            <text>温泉 · 点餐通用</text>
+          </view>
         </view>
-        <text class="arrow">›</text>
+
+        <text class="wallet-caption">当前可用余额</text>
+        <text class="wallet-balance" :class="{ 'is-message': isBalanceMessage }">{{ balanceDisplay }}</text>
+        <text v-if="!memberProfile" class="wallet-guest-hint">登录 / 开通会员后，余额两小程序通用</text>
+
+        <view class="wallet-footer">
+          <view class="wallet-usage">
+            <view class="usage-mark">
+              <view class="usage-fork" />
+              <view class="usage-knife" />
+            </view>
+            <text>温泉消费 · 餐饮点单</text>
+          </view>
+          <button
+            class="recharge-button"
+            hover-class="recharge-button--pressed"
+            @tap="goRecharge"
+          >
+            立即充值
+          </button>
+        </view>
       </view>
     </view>
   </view>

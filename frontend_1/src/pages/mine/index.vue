@@ -2,25 +2,89 @@
 import { ref } from "vue"
 import { onShow } from "@dcloudio/uni-app"
 import config from "../../config"
+import { clearSession, getToken, saveSession } from "../../utils/session.js"
 import { request, showError } from "../../utils/api"
 import { formatMoney } from "../../utils/money"
 
-const nickname = ref("温泉旅人")
+const nickname = ref("未登录")
 const balance = ref("0.00")
+const phone = ref("登录后查看会员权益")
+const loggedIn = ref(false)
+const loggingOut = ref(false)
+const devBusy = ref(false)
+const loginError = ref("")
 
 onShow(() => loadProfile())
 
 async function loadProfile() {
+  if (!getToken()) {
+    loggedIn.value = false
+    nickname.value = "未登录"
+    phone.value = "登录后查看会员权益"
+    balance.value = "0.00"
+    return
+  }
+  loggedIn.value = true
   try {
     const [profile, wallet] = await Promise.all([
-      request(`/members/${config.memberId}/profile`),
+      request("/members/me"),
       request("/wallet/balance"),
     ])
     nickname.value = profile.nickname
+    phone.value = profile.phone_masked
     balance.value = formatMoney(wallet.available_cents)
   } catch (error) {
     showError(error)
   }
+}
+
+function goLogin() {
+  uni.navigateTo({
+    url: "/pages/login/index?returnTo=" + encodeURIComponent("/pages/mine/index"),
+  })
+}
+
+function onProfileTap() {
+  if (!loggedIn.value) goLogin()
+}
+
+const goHome = () => uni.switchTab({ url: "/pages/home/index" })
+
+async function devLogin() {
+  if (devBusy.value) return
+  devBusy.value = true
+  loginError.value = ""
+  try {
+    const result = await request("/auth/dev", {
+      method: "POST",
+      auth: false,
+      data: { role: "member" },
+    })
+    saveSession({ ...result, expires_in: 7 * 24 * 60 * 60, nickname: "温泉旅人", phone_masked: "开发模式" })
+    await loadProfile()
+  } catch (error) {
+    loginError.value = error.message || "开发预览登录失败，请确认后端已启动"
+    showError(error)
+  } finally {
+    devBusy.value = false
+  }
+}
+
+async function logout() {
+  if (loggingOut.value) return
+  loggingOut.value = true
+  try {
+    await request("/auth/logout", { method: "POST" })
+    clearSession()
+    loggedIn.value = false
+    nickname.value = "未登录"
+    phone.value = "登录后查看会员权益"
+    balance.value = "0.00"
+    uni.showToast({ title: "已退出登录", icon: "none" })
+  } catch (error) {
+    // On network failure keep the session so logout can actually be retried.
+    showError(error)
+  } finally { loggingOut.value = false }
 }
 
 const goWallet = () => uni.navigateTo({ url: "/pages/wallet/index" })
@@ -30,19 +94,35 @@ const contact = () => uni.showToast({ title: "请前往前台或拨打园区公�
 
 <template>
   <view class="page mine-page">
+    <view class="mine-background">
+      <image class="mine-top-background" src="/static/mine/profile-background.jpg" mode="aspectFill" />
+      <view class="mine-top-fade" />
+    </view>
     <view class="mine-top">
       <view class="status-space" />
-      <view class="profile">
+      <view class="profile" @tap="onProfileTap">
         <view class="avatar">蜀</view>
         <view>
           <text>{{ nickname }}</text>
-          <text>统一业务会员 · 两个小程序一份账本</text>
+          <text>{{ phone }}</text>
         </view>
-        <text>›</text>
+        <text>{{ loggedIn ? '›' : '登录' }}</text>
       </view>
     </view>
     <view class="mine-content">
-      <view class="balance-card">
+      <view v-if="!loggedIn" class="login-card">
+        <text class="login-title">会员登录 / 注册</text>
+        <text class="login-desc">首次使用需验证手机号注册会员，已有会员登录原账户。</text>
+        <button class="login-button" @tap="goLogin">微信登录 / 注册</button>
+        <button class="guest-login-button" @tap="goHome">免登录浏览首页</button>
+        <template v-if="config.development">
+          <button class="dev-login-button" :disabled="devBusy" :loading="devBusy" @tap="devLogin">开发预览：直接进入</button>
+          <text class="dev-hint">仅开发环境使用，登录为后端开发会员，不代表真实微信登录</text>
+        </template>
+        <text v-if="loginError" class="login-error">{{ loginError }}</text>
+      </view>
+      <template v-if="loggedIn">
+        <view class="balance-card">
         <view>
           <text>储值余额</text>
           <text @tap="goWallet">余额明细　›</text>
@@ -76,6 +156,7 @@ const contact = () => uni.showToast({ title: "请前往前台或拨打园区公�
           </button>
         </view>
       </view>
+      <button :disabled="loggingOut" :loading="loggingOut" @tap="logout">退出登录</button>
       <view class="white-card services">
         <view class="card-head">
           <text>常用服务</text>
@@ -97,6 +178,7 @@ const contact = () => uni.showToast({ title: "请前往前台或拨打园区公�
           <text>›</text>
         </button>
       </view>
+      </template>
     </view>
   </view>
 </template>

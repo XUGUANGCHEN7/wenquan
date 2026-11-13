@@ -155,7 +155,7 @@ onMounted(() => load())
 </script>
 
 <template>
-  <PageHeader eyebrow="商家与商品管理" title="商家商品" description="管理员可新增、编辑、停用或删除商家和商品；点餐小程序只展示营业商家，下架或售罄商品不能下单。" />
+  <PageHeader eyebrow="商家与商品管理" title="商家商品" description="管理员可新增、编辑、停用或删除商家和商品；商家名称、菜品图片、名称和价格保存后会同步到私汤房点餐小程序。" />
   <p v-if="notice" class="success-note">{{ notice }}</p>
   <p v-if="actionError" class="form-error page-note">{{ actionError }}</p>
   <DataState :loading="loading" :error="loadError" :empty="false" @retry="load()">
@@ -186,6 +186,7 @@ onMounted(() => load())
         <p class="hint">{{ selectedMerchant ? `当前商家：${selectedMerchant.name}` : "请先在左侧选择或新增商家。" }}</p>
         <div class="simple-list">
           <div v-for="item in merchantItems" :key="item.id" class="simple-row">
+            <img v-if="item.image_url" :src="item.image_url" class="menu-thumb" alt="菜品图片" />
             <span><strong>{{ item.name }}</strong><br /><small>{{ item.category }} · ¥{{ formatMoney(item.price_cents) }} · {{ item.stock === null ? "不限库存" : `库存 ${item.stock}` }}</small></span>
             <span class="operator-tag">{{ item.available ? "可售" : "已下架" }}</span>
             <button class="mini-button" @click="selectItem(item)">编辑</button>
@@ -204,6 +205,7 @@ onMounted(() => load())
             <label class="check-row"><input v-model="unlimitedStock" type="checkbox" />不限库存</label>
           </div>
           <label>图片地址<input v-model="itemForm.imageUrl" maxlength="500" placeholder="https://…" /></label>
+          <img v-if="itemForm.imageUrl" :src="itemForm.imageUrl" class="menu-thumb form-thumb" alt="商品图片预览" />
           <label>商品描述<textarea v-model="itemForm.description" rows="2" maxlength="300" /></label>
           <label class="check-row"><input v-model="itemForm.available" type="checkbox" />可售</label>
           <button class="button secondary" :disabled="itemSaving">{{ selectedItemId ? "保存商品" : "新增商品" }}</button>

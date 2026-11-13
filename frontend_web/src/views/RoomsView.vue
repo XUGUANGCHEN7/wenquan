@@ -7,6 +7,8 @@ import PageHeader from "../components/PageHeader.vue"
 import DataState from "../components/DataState.vue"
 import StatusBadge from "../components/StatusBadge.vue"
 
+interface VerifyPrivateResult { room_number: string; room_use_id: string; status: string; actual_end_at: string | null; already_verified: boolean }
+
 const rooms = ref<RoomBoardItem[]>([])
 const loading = ref(true)
 const error = ref("")
@@ -18,6 +20,38 @@ const blockRoom = ref("")
 const blockStart = ref("")
 const blockEnd = ref("")
 const blockReason = ref("设备维护或人工占用")
+const verifyCode = ref("")
+const verifyReason = ref("私汤订单前台核验并分房")
+const verifyBusy = ref(false)
+const verifyError = ref("")
+const verifyNotice = ref("")
+const verifyResult = ref<VerifyPrivateResult | null>(null)
+
+function requestId() {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(16).slice(2)}`
+}
+
+async function verifyPrivate() {
+  const code = verifyCode.value.trim()
+  if (!code || verifyBusy.value) return
+  verifyBusy.value = true
+  verifyError.value = ""
+  verifyNotice.value = ""
+  verifyResult.value = null
+  try {
+    const result = await api.post<VerifyPrivateResult>("/operations/rooms/verify-code", {
+      code, request_id: requestId(), reason: verifyReason.value,
+    })
+    verifyResult.value = result
+    verifyNotice.value = result?.already_verified ? "该私汤订单已完成核验" : "核验成功，已记录使用开始时间"
+    verifyCode.value = ""
+    await load()
+  } catch (cause) {
+    verifyError.value = cause instanceof Error ? cause.message : "私汤核验失败"
+  } finally { verifyBusy.value = false }
+}
 
 async function load() {
   loading.value = true
@@ -62,8 +96,27 @@ async function createBlock() {
 </script>
 
 <template>
-  <PageHeader eyebrow="ROOM STATE & ASSIGNMENT" title="私汤房态与分房" description="预约不指定房号；实际使用从前台分房起算。未完成清洁不得再次分房。" />
+  <PageHeader eyebrow="PRIVATE ONSEN VERIFICATION" title="私汤核验与房态" description="扫描购票订单二维码或输入订单编号完成私汤核验；未支付、已使用或冲突订单不会被强行分房。" />
   <DataState :loading="loading" :error="error" :empty="false" @retry="load">
+    <section class="panel verify-panel">
+      <div class="panel-head"><h2>私汤订单核验</h2><span class="muted">小白盒扫码 / 备用订单号</span></div>
+      <form class="form-stack" @submit.prevent="verifyPrivate">
+        <label>私汤订单二维码 / 订单号 / 预约 ID
+          <input v-model="verifyCode" autocomplete="off" placeholder="扫码枪扫描，或输入订单编号" />
+        </label>
+        <label>核验原因 / 记录<input v-model="verifyReason" maxlength="500" /></label>
+        <p class="hint">核验会按预约完整使用区间与清洁区间重新检查可用房，不会覆盖下一笔预约；冲突时交由前台人工处理。</p>
+        <p v-if="verifyError" class="form-error">{{ verifyError }}</p>
+        <p v-if="verifyNotice" class="success-note">{{ verifyNotice }}</p>
+        <button class="button primary" :disabled="verifyBusy || !verifyCode.trim()">{{ verifyBusy ? "正在核验…" : "核验并分房" }}</button>
+      </form>
+      <div v-if="verifyResult" class="verify-result">
+        <strong>{{ verifyResult.room_number }} 号房</strong>
+        <span>状态 {{ verifyResult.status }}</span>
+        <span>预计结束 {{ formatDateTime(verifyResult.actual_end_at) }}</span>
+        <span class="mono">{{ verifyResult.room_use_id }}</span>
+      </div>
+    </section>
     <div class="room-board">
       <article v-for="room in rooms" :key="room.id" class="room-tile" :data-status="room.status">
         <div class="room-tile-head"><strong>{{ room.number }}</strong><StatusBadge :status="room.status" /></div>

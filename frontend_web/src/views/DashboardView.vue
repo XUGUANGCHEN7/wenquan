@@ -12,9 +12,11 @@ const loading = ref(true)
 const error = ref("")
 const exceptions = ref<Exceptions | null>(null)
 const rooms = ref<RoomBoardItem[]>([])
+const summary = ref<{ ticket_verifications: number; private_verifications: number } | null>(null)
 const status = ref<Record<string, string>>({})
 const canViewExceptions = computed(() => auth.role !== "merchant")
 const canViewRooms = computed(() => auth.role === "frontdesk" || auth.role === "admin")
+const canViewSummary = computed(() => auth.role !== "merchant")
 const exceptionCount = computed(() => exceptions.value
   ? Object.values(exceptions.value).reduce((total, list) => total + list.length, 0) : 0)
 const occupied = computed(() => rooms.value.filter((room) => ["ACTIVE", "IN_USE", "PENDING_CLEANING", "CLEANING"].includes(room.status)).length)
@@ -27,6 +29,7 @@ async function load() {
     const requests: Promise<unknown>[] = []
     if (canViewExceptions.value) requests.push(api.get<Exceptions>("/operations/exceptions").then((data) => { exceptions.value = data }))
     if (canViewRooms.value) requests.push(api.get<RoomBoardItem[]>("/operations/rooms/board").then((data) => { rooms.value = data }))
+    if (canViewSummary.value) requests.push(api.get("/operations/verification-summary").then((data) => { summary.value = data as typeof summary.value }))
     await Promise.all(requests)
   } catch (cause) {
     error.value = cause instanceof Error ? cause.message : "加载失败"
@@ -40,6 +43,8 @@ onMounted(load)
   <PageHeader eyebrow="DAILY OPERATIONS" title="运营总览" description="以服务端状态为主，优先处理资金、设备未知与房间占用冲突。" />
   <DataState :loading="loading" :error="error" :empty="false" @retry="load">
     <section class="metric-grid">
+      <article class="metric-card"><span>今日票券核验</span><strong>{{ summary?.ticket_verifications ?? "—" }}</strong><small>已记录单次人工入园</small></article>
+      <article class="metric-card"><span>今日私汤核验</span><strong>{{ summary?.private_verifications ?? "—" }}</strong><small>已核验并起算的私汤房</small></article>
       <article class="metric-card"><span>待处理异常</span><strong>{{ exceptionCount }}</strong><small>{{ canViewExceptions ? "退款、设备、冲突与送达" : "商家账号仅处理出餐队列" }}</small></article>
       <article class="metric-card"><span>占用中私汤房</span><strong>{{ canViewRooms ? occupied : "—" }}</strong><small>使用、待清洁与清洁中</small></article>
       <article class="metric-card"><span>支付模式</span><strong class="text-value">{{ status.payment_mode ?? "—" }}</strong><small>正式环境需替换支付适配器</small></article>

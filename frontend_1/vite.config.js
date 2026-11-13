@@ -5,4 +5,11 @@ const uni = uniModule.default || uniModule
 
 export default defineConfig({
   plugins: [uni()],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        silenceDeprecations: ["legacy-js-api"],
+      },
+    },
+  },
 })

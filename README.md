@@ -2,7 +2,7 @@
 
 本仓库按 `.clinerules/project-rules.md` 交付一期可运行骨架：两个独立 uni-app + Vue 3 微信小程序、Vue 3 运营 Web、FastAPI/MySQL 模块化单体，以及只主动出站访问后端的 Windows 设备任务服务。
 
-> 当前是开发/Mock 环境，不是生产验收。微信支付、微信登录、真实 Windows SDK、NFC 读写器、柜锁和私汤锁尚未接入；开发 Mock 的成功页面不代表真实扣款或硬件动作成功。
+> 当前是开发/Mock 环境，不是生产验收。购票端已接入可配置的微信手机号注册与会员会话，待真实配置和真机联调；微信支付、真实 Windows SDK、NFC 读写器、柜锁和私汤锁尚未接入；开发 Mock 的成功页面不代表真实扣款或硬件动作成功。
 
 ## 目录
 
@@ -91,7 +91,7 @@ npm run build
 ### 购票会员端
 
 1. AppID 位于 `frontend_1/src/manifest.json` 的 `mp-weixin.appid`，不得与点餐端共用。
-2. `frontend_1/src/config.js` 自动区分开发者工具和真机接口地址；开发环境使用开发会员令牌和 Mock 支付。
+2. `frontend_1/src/config.js` 自动区分开发者工具和真机接口地址；购票端须通过手机号注册/微信登录，不再自动使用开发会员令牌；支付仍为 Mock。登录配置和旧库升级见 [会员登录说明](docs/member-login.md)。
 3. 构建后在微信开发者工具导入 `frontend_1/dist/dev/mp-weixin`（开发）或 `frontend_1/dist/build/mp-weixin`（生产）。不要导入项目根目录。
 
 ```powershell

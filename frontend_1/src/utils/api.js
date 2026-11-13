@@ -1,7 +1,14 @@
 import config from "../config.js"
+import { getToken, clearSession, redirectToLogin } from "./session.js"
 
 export function request(path, { method = "GET", data, auth = true } = {}) {
-  const token = uni.getStorageSync("member_token") || (config.development ? config.devToken : "")
+  const token = auth ? getToken() : ""
+  if (auth && !token) {
+    redirectToLogin()
+    const error = new Error("请先登录并完成手机号注册")
+    error.code = "AUTH_REQUIRED"
+    return Promise.reject(error)
+  }
   return new Promise((resolve, reject) => {
     uni.request({
       url: `${config.apiBase}${path}`,
@@ -17,6 +24,10 @@ export function request(path, { method = "GET", data, auth = true } = {}) {
           return
         }
         const body = response.data || {}
+        if (auth && token === getToken() && (response.statusCode === 401 || body.code === "MEMBER_DISABLED")) {
+          clearSession()
+          redirectToLogin()
+        }
         const error = new Error(body.message || `请求失败（${response.statusCode}）`)
         error.code = body.code || "HTTP_ERROR"
         reject(error)
@@ -41,5 +52,6 @@ export async function payOrder(orderNo, method) {
 }
 
 export function showError(error) {
+  if (["AUTH_REQUIRED", "AUTH_INVALID", "REGISTRATION_REQUIRED", "MEMBER_DISABLED"].includes(error.code)) return
   uni.showToast({ title: (error.message || "操作失败").slice(0, 40), icon: "none", duration: 3000 })
 }

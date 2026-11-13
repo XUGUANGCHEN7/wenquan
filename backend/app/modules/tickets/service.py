@@ -4,7 +4,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.errors import ApiError
-from app.modules.catalog.models import TicketPriceRule
+from app.modules.catalog.models import BusinessConfig, TicketPriceRule
 from app.modules.common import new_business_no, new_id, utcnow
 from app.modules.payments.models import Order
 from app.modules.tickets.models import Admission, Ticket, TicketBatch
@@ -12,12 +12,22 @@ from app.modules.tickets.models import Admission, Ticket, TicketBatch
 
 class TicketService:
     @staticmethod
+    def _config(session: Session, key: str, default: int) -> int:
+        config = session.get(BusinessConfig, key)
+        return config.value if config else default
+
+    @staticmethod
     def prices(session: Session, visit_date: date) -> tuple[int, int]:
         rule = session.get(TicketPriceRule, visit_date)
         if rule:
             return rule.adult_cents, rule.child_cents
-        adult = 4_900 if visit_date.weekday() >= 5 else 2_900
-        return adult, adult
+        adult = TicketService._config(
+            session,
+            "ticket_weekend_cents" if visit_date.weekday() >= 5 else "ticket_weekday_cents",
+            4_900 if visit_date.weekday() >= 5 else 2_900,
+        )
+        child = TicketService._config(session, "ticket_child_cents", adult)
+        return adult, child
 
     @staticmethod
     def create_order(
