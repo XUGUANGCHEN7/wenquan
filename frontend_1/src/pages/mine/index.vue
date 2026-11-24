@@ -1,188 +1,131 @@
 <script setup>
 import { ref } from "vue"
-import { onShow } from "@dcloudio/uni-app"
+import { onShow, onHide } from "@dcloudio/uni-app"
 import config from "../../config"
-import { clearSession, getToken, saveSession } from "../../utils/session.js"
+import MemberEntryGrid from "../../components/MemberEntryGrid.vue"
+import { getToken, saveSession } from "../../utils/session.js"
 import { request, showError } from "../../utils/api"
 import { formatMoney } from "../../utils/money"
 
-const nickname = ref("未登录")
-const balance = ref("0.00")
-const phone = ref("登录后查看会员权益")
 const loggedIn = ref(false)
-const loggingOut = ref(false)
+const profile = ref(null)
+const balance = ref(null)
+const loading = ref(false)
+const profileError = ref("")
+const balanceError = ref("")
 const devBusy = ref(false)
 const loginError = ref("")
-
-onShow(() => loadProfile())
-
+let generation = 0
+const orderEntries = [
+  { key: "TICKET", label: "门票订单", icon: "file" },
+  { key: "PRIVATE", label: "私汤预约", icon: "time-line" },
+  { key: "RECHARGE", label: "储值记录", icon: "history" },
+  { key: "REFUND", label: "退款记录", icon: "history" },
+]
+const serviceEntries = [
+  { key: "profile", label: "个人信息", icon: "user" },
+  { key: "security", label: "账户安全", icon: "lock" },
+  { key: "contact", label: "联系客服", icon: "phone" },
+  { key: "notice", label: "预约须知", icon: "question-circle" },
+  { key: "about", label: "关于我们", icon: "info-circle" },
+]
+onShow(loadProfile)
+onHide(() => { generation++ })
 async function loadProfile() {
-  if (!getToken()) {
-    loggedIn.value = false
-    nickname.value = "未登录"
-    phone.value = "登录后查看会员权益"
-    balance.value = "0.00"
-    return
-  }
-  loggedIn.value = true
-  try {
-    const [profile, wallet] = await Promise.all([
-      request("/members/me"),
-      request("/wallet/balance"),
-    ])
-    nickname.value = profile.nickname
-    phone.value = profile.phone_masked
-    balance.value = formatMoney(wallet.available_cents)
-  } catch (error) {
-    showError(error)
-  }
+  const version = ++generation
+  const token = getToken()
+  loggedIn.value = !!token
+  profile.value = null
+  balance.value = null
+  profileError.value = ""
+  balanceError.value = ""
+  loading.value = false
+  if (!token) return
+  loading.value = true
+  const results = await Promise.allSettled([request("/members/me"), request("/wallet/balance")])
+  if (version !== generation) return
+  if (token !== getToken()) { loggedIn.value = false; loading.value = false; return }
+  const [member, wallet] = results
+  if (member.status === "fulfilled") profile.value = member.value
+  else profileError.value = member.reason.message || "会员信息加载失败"
+  if (wallet.status === "fulfilled" && Number.isInteger(wallet.value.available_cents)) balance.value = formatMoney(wallet.value.available_cents)
+  else balanceError.value = wallet.status === "rejected" ? wallet.reason.message : "余额数据暂不可用"
+  loading.value = false
 }
-
-function goLogin() {
-  uni.navigateTo({
-    url: "/pages/login/index?returnTo=" + encodeURIComponent("/pages/mine/index"),
-  })
+function goLogin(target = "/pages/mine/index") {
+  uni.navigateTo({ url: "/pages/login/index?returnTo=" + encodeURIComponent(target) })
 }
-
-function onProfileTap() {
-  if (!loggedIn.value) goLogin()
+function goOrders(filter = "ALL") {
+  uni.setStorageSync("member_order_filter", filter)
+  if (!getToken()) { goLogin("/pages/orders/index"); return }
+  uni.switchTab({ url: "/pages/orders/index" })
 }
-
-const goHome = () => uni.switchTab({ url: "/pages/home/index" })
-
+function goWallet(entries = false) {
+  const url = entries ? "/pages/wallet/transactions" : "/pages/wallet/index"
+  if (!getToken()) { goLogin(url); return }
+  uni.navigateTo({ url })
+}
+function goService(key) {
+  const url = "/pages/member-service/index?section=" + key
+  if (["profile", "security"].includes(key) && !getToken()) { goLogin(url); return }
+  uni.navigateTo({ url })
+}
 async function devLogin() {
   if (devBusy.value) return
   devBusy.value = true
   loginError.value = ""
   try {
-    const result = await request("/auth/dev", {
-      method: "POST",
-      auth: false,
-      data: { role: "member" },
-    })
+    const result = await request("/auth/dev", { method: "POST", auth: false, data: { role: "member" } })
     saveSession({ ...result, expires_in: 7 * 24 * 60 * 60, nickname: "温泉旅人", phone_masked: "开发模式" })
     await loadProfile()
-  } catch (error) {
-    loginError.value = error.message || "开发预览登录失败，请确认后端已启动"
-    showError(error)
-  } finally {
-    devBusy.value = false
-  }
+  } catch (error) { loginError.value = error.message || "开发预览登录失败"; showError(error) }
+  finally { devBusy.value = false }
 }
-
-async function logout() {
-  if (loggingOut.value) return
-  loggingOut.value = true
-  try {
-    await request("/auth/logout", { method: "POST" })
-    clearSession()
-    loggedIn.value = false
-    nickname.value = "未登录"
-    phone.value = "登录后查看会员权益"
-    balance.value = "0.00"
-    uni.showToast({ title: "已退出登录", icon: "none" })
-  } catch (error) {
-    // On network failure keep the session so logout can actually be retried.
-    showError(error)
-  } finally { loggingOut.value = false }
-}
-
-const goWallet = () => uni.navigateTo({ url: "/pages/wallet/index" })
-const goOrders = () => uni.switchTab({ url: "/pages/orders/index" })
-const contact = () => uni.showToast({ title: "请前往前台或拨打园区公示电话", icon: "none" })
 </script>
-
 <template>
   <view class="page mine-page">
-    <view class="mine-background">
-      <image class="mine-top-background" src="/static/mine/profile-background.jpg" mode="aspectFill" />
-      <view class="mine-top-fade" />
-    </view>
-    <view class="mine-top">
-      <view class="status-space" />
-      <view class="profile" @tap="onProfileTap">
-        <view class="avatar">蜀</view>
-        <view>
-          <text>{{ nickname }}</text>
-          <text>{{ phone }}</text>
+    <view class="member-header">
+      <image class="member-header-bg" src="/static/mine/member-header.jpg" mode="aspectFill" />
+      <view class="member-header-shade" />
+      <text class="member-brand">♨ 蜀南温泉</text>
+      <view class="member-profile" @tap="loggedIn ? goService('profile') : goLogin()">
+        <image class="member-avatar" :src="profile?.avatar_url || '/static/mine/default-avatar.png'" mode="aspectFill" />
+        <view class="member-profile-copy">
+          <view class="member-name-row"><text class="member-name">{{ loggedIn ? loading ? '正在读取会员信息…' : profile?.nickname || '会员' : '欢迎来到蜀南温泉' }}</text><text v-if="loggedIn" class="member-badge">会员</text></view>
+          <text class="member-welcome">{{ loggedIn ? '欢迎回来，畅享蜀南温泉服务' : '登录后享受会员服务' }}</text>
         </view>
-        <text>{{ loggedIn ? '›' : '登录' }}</text>
+        <text class="profile-arrow">›</text>
       </view>
     </view>
     <view class="mine-content">
-      <view v-if="!loggedIn" class="login-card">
-        <text class="login-title">会员登录 / 注册</text>
-        <text class="login-desc">首次使用需验证手机号注册会员，已有会员登录原账户。</text>
-        <button class="login-button" @tap="goLogin">微信登录 / 注册</button>
-        <button class="guest-login-button" @tap="goHome">免登录浏览首页</button>
-        <template v-if="config.development">
-          <button class="dev-login-button" :disabled="devBusy" :loading="devBusy" @tap="devLogin">开发预览：直接进入</button>
-          <text class="dev-hint">仅开发环境使用，登录为后端开发会员，不代表真实微信登录</text>
-        </template>
-        <text v-if="loginError" class="login-error">{{ loginError }}</text>
-      </view>
-      <template v-if="loggedIn">
-        <view class="balance-card">
-        <view>
-          <text>储值余额</text>
-          <text @tap="goWallet">余额明细　›</text>
-        </view>
-        <text class="amount">
-          <text>¥</text>
-          {{ balance }}
-        </text>
-        <text class="balance-desc">可用于门票、私汤与独立房间点餐</text>
-        <button @tap="goWallet">进入储值中心</button>
-        <view class="ring ring-one" />
-        <view class="ring ring-two" />
-      </view>
-      <view class="white-card">
-        <view class="card-head">
-          <text>我的订单</text>
-          <text @tap="goOrders">全部订单　›</text>
-        </view>
-        <view class="order-grid member-order-grid">
-          <button @tap="goOrders">
-            <text>票</text>
-            <text>门票订单</text>
-          </button>
-          <button @tap="goOrders">
-            <text>汤</text>
-            <text>私汤预约</text>
-          </button>
-          <button @tap="goWallet">
-            <text>充</text>
-            <text>储值记录</text>
-          </button>
+      <view v-if="loggedIn" class="member-balance-card">
+        <image class="balance-background" src="/static/mine/member-balance.jpg" mode="aspectFill" />
+        <view class="balance-content">
+          <view class="balance-heading"><text>会员余额</text><button class="balance-details" @tap="goWallet(true)">余额明细 ›</button></view>
+          <text class="balance-amount"><text>¥</text>{{ loading ? '加载中…' : balance ?? '—' }}</text>
+          <text class="balance-description">可用于门票、私汤预约</text>
+          <text v-if="balanceError || profileError" class="member-error">{{ balanceError || profileError }}</text>
+          <button v-if="balanceError || profileError" class="retry-link" @tap="loadProfile">重新加载</button>
+          <view class="balance-actions"><button class="voucher-button" @tap="goOrders('VOUCHERS')">我的卡券</button><button class="recharge-button" @tap="goWallet(false)">立即储值</button></view>
         </view>
       </view>
-      <button :disabled="loggingOut" :loading="loggingOut" @tap="logout">退出登录</button>
-      <view class="white-card services">
-        <view class="card-head">
-          <text>常用服务</text>
-        </view>
-        <button @tap="goOrders">
-          <text class="service-icon">码</text>
-          <view>
-            <text>票券与预约状态</text>
-            <text>每票仅支持一次人工入园核验</text>
-          </view>
-          <text>›</text>
-        </button>
-        <button @tap="contact">
-          <text class="service-icon">客</text>
-          <view>
-            <text>联系客服</text>
-            <text>异常订单请由前台按权限处理</text>
-          </view>
-          <text>›</text>
-        </button>
+      <view v-else class="member-login-card">
+        <text class="login-title">开启你的温泉会员之旅</text><text class="login-description">登录后查看会员余额、订单与票券</text>
+        <button class="recharge-button" @tap="goLogin()">微信快捷登录</button>
+        <template v-if="config.development"><button class="dev-login-button" :loading="devBusy" :disabled="devBusy" @tap="devLogin">开发预览：直接进入</button><text class="dev-hint">仅开发环境使用</text></template>
+        <text v-if="loginError" class="member-error">{{ loginError }}</text>
       </view>
-      </template>
+      <view class="member-white-card">
+        <view class="member-card-head"><text>我的订单</text><button @tap="goOrders('ALL')">全部订单 ›</button></view>
+        <MemberEntryGrid :items="orderEntries" @select="goOrders" />
+      </view>
+      <view class="member-white-card">
+        <view class="member-card-head"><text>常用服务</text></view>
+        <MemberEntryGrid :items="serviceEntries" :columns="5" @select="goService" />
+      </view>
     </view>
   </view>
 </template>
-
 <style>
 @import "./style.css";
 </style>

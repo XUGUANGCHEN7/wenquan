@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import Date, DateTime, ForeignKey, Integer, JSON, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -12,7 +12,10 @@ class TicketBatch(Base):
 
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     order_id: Mapped[str] = mapped_column(ForeignKey("orders.id"), unique=True, nullable=False)
-    visit_date: Mapped[date] = mapped_column(Date, nullable=False)
+    visit_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    day_type: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    valid_days: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    valid_until: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     adult_count: Mapped[int] = mapped_column(Integer, nullable=False)
     child_count: Mapped[int] = mapped_column(Integer, nullable=False)
     adult_unit_cents: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -41,4 +44,13 @@ class Admission(Base):
     ticket_id: Mapped[str] = mapped_column(ForeignKey("tickets.id"), unique=True, nullable=False)
     operator: Mapped[str] = mapped_column(String(96), nullable=False)
     request_id: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
+    admitted_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
+
+
+class AdmissionBatch(Base):
+    __tablename__ = "admission_batches"
+    request_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    order_id: Mapped[str] = mapped_column(ForeignKey("orders.id"), nullable=False)
+    ticket_nos: Mapped[list[str]] = mapped_column(JSON, nullable=False)
+    result: Mapped[dict] = mapped_column(JSON, nullable=False)
     admitted_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)

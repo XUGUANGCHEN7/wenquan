@@ -2,55 +2,43 @@
 import { computed, ref } from "vue"
 import { onLoad } from "@dcloudio/uni-app"
 import { request, payOrder, showError } from "../../utils/api"
-import { formatMoney, dateInput, dateLabel } from "../../utils/money"
+import { formatMoney } from "../../utils/money"
 
-const dates = ref([])
-const dateIndex = ref(0)
+const products = ref([])
+const dayType = ref("WEEKDAY")
+const priceError = ref("")
+const product = computed(() => products.value.find(item => item.day_type === dayType.value))
 const adult = ref(1)
 const child = ref(0)
-const adultPrice = ref(0)
-const childPrice = ref(0)
-const adultDisplay = ref("0.00")
-const childDisplay = ref("0.00")
+const adultPrice = computed(() => product.value?.adult_cents || 0)
+const childPrice = computed(() => product.value?.child_cents || 0)
+const adultDisplay = computed(() => formatMoney(adultPrice.value))
+const childDisplay = computed(() => formatMoney(childPrice.value))
 const paymentMethod = ref("WECHAT")
 const submitting = ref(false)
 const loading = ref(true)
 
 const total = computed(() => formatMoney(adultPrice.value * adult.value + childPrice.value * child.value))
 
-onLoad(() => {
-  dates.value = Array.from({ length: 7 }, (_, index) => {
-    const value = dateInput(index)
-    return { value, label: dateLabel(value), display: value.slice(5).replace("-", "/") }
-  })
-  loadPrices()
-})
+onLoad(loadPrices)
 
 async function loadPrices() {
   loading.value = true
-  const visitDate = dates.value[dateIndex.value]?.value
-  if (!visitDate) return
+  priceError.value = ""
   try {
-    const prices = await request(`/catalog/ticket-prices?visit_date=${visitDate}`, { auth: false })
-    adultPrice.value = prices.adult_cents
-    childPrice.value = prices.child_cents
-    adultDisplay.value = formatMoney(prices.adult_cents)
-    childDisplay.value = formatMoney(prices.child_cents)
+    const prices = await request("/catalog/ticket-products", { auth: false })
+    if (!Array.isArray(prices) || !["WEEKDAY", "HOLIDAY"].every(kind => prices.some(item => item.day_type === kind && Number.isInteger(item.adult_cents) && item.adult_cents >= 0 && Number.isInteger(item.child_cents) && item.child_cents >= 0))) throw new Error("票价暂不可用，请重试")
+    products.value = prices
   } catch (error) {
+    products.value = []
+    priceError.value = error.message || "票价读取失败"
     showError(error)
-  } finally {
-    loading.value = false
-  }
-}
-
-function selectDate(index) {
-  dateIndex.value = index
-  loadPrices()
+  } finally { loading.value = false }
 }
 
 function changeCount(type, delta) {
-  if (type === "adult") adult.value = Math.max(0, adult.value + delta)
-  else child.value = Math.max(0, child.value + delta)
+  if (type === "adult") adult.value = Math.max(0, Math.min(20 - child.value, adult.value + delta))
+  else child.value = Math.max(0, Math.min(20 - adult.value, child.value + delta))
 }
 
 function selectPayment(method) {
@@ -58,7 +46,7 @@ function selectPayment(method) {
 }
 
 async function submit() {
-  if (submitting.value) return
+  if (submitting.value || loading.value || priceError.value || !product.value) return
   if (!adult.value && !child.value) {
     uni.showToast({ title: "请选择购票人数", icon: "none" })
     return
@@ -68,7 +56,7 @@ async function submit() {
     const order = await request("/tickets/orders", {
       method: "POST",
       data: {
-        visit_date: dates.value[dateIndex.value].value,
+        day_type: dayType.value,
         adult_count: adult.value,
         child_count: child.value,
       },
@@ -93,33 +81,26 @@ async function submit() {
   <view class="page tickets-page">
     <view class="ticket-intro">
       <view>
-        <text class="en">PUBLIC BATH</text>
         <text class="title">公共浴池入园票</text>
-        <text class="desc">每位实际入园游客均需一张独立门票</text>
+        <text class="desc">每位入园游客均需一张门票</text>
       </view>
-      <image mode="aspectFill" src="https://images.unsplash.com/photo-1706189767508-8df45439f92c?auto=format&fit=crop&w=700&q=85" />
+      <image mode="aspectFill" src="/static/orders/ticket.jpg" />
     </view>
-    <view class="tips">平日 29 元，周末及后台配置节假日 49 元；每票仅支持一次人工核验入园，儿童规则与价格以服务端配置为准。</view>
+    <view class="tips">付款后30天内有效。工作日票适用于非节假日的周一至周五，节假日票适用于法定节假日。</view>
 
     <view class="form-section">
       <view class="step-head">
         <text>01</text>
         <view>
-          <text>选择入园日期</text>
-          <text>价格由服务端按日期返回</text>
+          <text>选择票种</text>
+          <text>按实际入园当天的日期类型核销</text>
         </view>
       </view>
-      <scroll-view class="dates" scroll-x>
-        <button
-          v-for="(item, index) in dates"
-          :key="item.value"
-          :class="{ active: dateIndex === index }"
-          @tap="selectDate(index)"
-        >
-          <text>{{ item.label }}</text>
-          <text>{{ item.display }}</text>
-        </button>
-      </scroll-view>
+      <view class="ticket-types">
+        <button v-for="item in products" :key="item.day_type" :class="{ active: dayType === item.day_type }" @tap="dayType = item.day_type">{{ item.name }}</button>
+      </view>
+      <text v-if="loading" class="ticket-price-state">正在读取票价…</text>
+      <view v-if="priceError" class="ticket-price-state"><text>{{ priceError }}</text><button @tap="loadPrices">重新加载票价</button></view>
     </view>
 
     <view class="form-section">
@@ -127,13 +108,13 @@ async function submit() {
         <text>02</text>
         <view>
           <text>选择购票人数</text>
-          <text>支付后逐人生成独立票券</text>
+          <text>支付后生成票券</text>
         </view>
       </view>
       <view class="guest">
         <view>
           <text>成人票 · ¥{{ adultDisplay }}</text>
-          <text>成交时保存价格快照</text>
+          <text>付款后30天内使用</text>
         </view>
         <view class="counter">
           <button @tap="changeCount('adult', -1)">−</button>
@@ -144,7 +125,7 @@ async function submit() {
       <view class="guest">
         <view>
           <text>儿童票 · ¥{{ childDisplay }}</text>
-          <text>适用规则以现场及后台配置为准</text>
+          <text>适用规则以商家为准</text>
         </view>
         <view class="counter">
           <button @tap="changeCount('child', -1)">−</button>
@@ -159,18 +140,25 @@ async function submit() {
         <text>03</text>
         <view>
           <text>支付方式</text>
-          <text>支付结果以服务端查询为准</text>
         </view>
       </view>
-      <view class="payment-methods">
-        <button :class="{ active: paymentMethod === 'WECHAT' }" @tap="selectPayment('WECHAT')">微信支付</button>
-        <button :class="{ active: paymentMethod === 'BALANCE' }" @tap="selectPayment('BALANCE')">会员余额</button>
+      <view class="payment-methods" role="radiogroup" aria-label="支付方式">
+        <button class="ticket-payment-card" :class="{ 'is-selected': paymentMethod === 'WECHAT' }" role="radio" :aria-checked="paymentMethod === 'WECHAT'" hover-class="ticket-payment-pressed" @tap="selectPayment('WECHAT')">
+          <view class="ticket-payment-icon wechat-payment-icon" aria-hidden="true"><view class="wechat-bubble bubble-back" /><view class="wechat-bubble bubble-front" /></view>
+          <text class="ticket-payment-label">微信支付</text>
+          <view class="ticket-payment-check" aria-hidden="true" />
+        </button>
+        <button class="ticket-payment-card" :class="{ 'is-selected': paymentMethod === 'BALANCE' }" role="radio" :aria-checked="paymentMethod === 'BALANCE'" hover-class="ticket-payment-pressed" @tap="selectPayment('BALANCE')">
+          <view class="ticket-payment-icon wallet-payment-icon" aria-hidden="true"><view class="wallet-outline"><view class="wallet-clasp" /></view></view>
+          <text class="ticket-payment-label">会员余额</text>
+          <view class="ticket-payment-check" aria-hidden="true" />
+        </button>
       </view>
     </view>
 
     <view class="bottom-bar">
-      <view><text>服务端价格预估</text><text class="total"><text>¥</text>{{ total }}</text></view>
-      <button :loading="submitting" :disabled="loading || submitting" @tap="submit">{{ submitting ? "正在确认" : "确认购票" }}</button>
+      <view><text>合计</text><text class="total"><text>¥</text>{{ total }}</text></view>
+      <button :loading="submitting" :disabled="loading || submitting || !!priceError || !product" @tap="submit">{{ submitting ? "正在确认" : "确认购票" }}</button>
     </view>
   </view>
 </template>

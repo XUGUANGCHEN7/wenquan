@@ -1,8 +1,10 @@
 const protectedPages = new Set([
   '/pages/home/index', '/pages/tickets/index', '/pages/private-room/index',
   '/pages/orders/index', '/pages/mine/index', '/pages/wallet/index',
+  '/pages/orders/detail', '/pages/wallet/transactions',
+  '/pages/member-service/index',
 ])
-const guestPages = new Set(['/pages/home/index', '/pages/mine/index', '/pages/login/index', '/pages/account-info/index'])
+const guestPages = new Set(['/pages/home/index', '/pages/mine/index', '/pages/login/index', '/pages/account-info/index', '/pages/member-service/index'])
 const tabs = new Set(['/pages/home/index', '/pages/orders/index', '/pages/mine/index'])
 let redirecting = false
 

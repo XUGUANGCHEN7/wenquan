@@ -36,6 +36,11 @@ def seed_development_data(session: Session) -> None:
     for key, (value, description) in defaults.items():
         if session.get(BusinessConfig, key) is None:
             session.add(BusinessConfig(key=key, value=value, description=description))
+    session.flush()
+    for key in ("ticket_weekday_child_cents", "ticket_holiday_child_cents"):
+        if session.get(BusinessConfig, key) is None:
+            session.add(BusinessConfig(key=key, value=session.get(BusinessConfig, "ticket_child_cents").value,
+                                       description="公共浴池分票种儿童价格，单位：分"))
     from app.modules.access.models import Card, Locker
     from app.modules.common import utcnow
     from app.modules.dining.models import MenuItem, Merchant, RoomQrCode

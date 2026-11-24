@@ -123,6 +123,11 @@ class RoomService:
     @staticmethod
     def assign_booking(session: Session, booking_id: str, *, actual_start: datetime,
                        operator: str, reason: str, request_id: str) -> RoomUse | None:
+        preliminary = session.get(PrivateBooking, booking_id)
+        if preliminary:
+            session.get(Order, preliminary.order_id, with_for_update=True)
+            from app.modules.payments.refund_applications import block_pending_refund
+            block_pending_refund(session, preliminary.order_id)
         booking = session.get(PrivateBooking, booking_id, with_for_update=True)
         if booking is None or booking.status != "CONFIRMED":
             raise ApiError(409, "BOOKING_NOT_ASSIGNABLE", "Only a confirmed booking can be assigned")

@@ -10,7 +10,7 @@ test("order presentation keeps payment and admission semantics distinct", async 
   const { presentOrder } = await api()
   const paid = presentOrder(ticket, { visit_date: "2026-11-13", tickets: [{ category: "ADULT", status: "USED" }, { category: "CHILD", status: "UNUSED" }] })
   assert.equal(paid.title, "公共浴池门票")
-  assert.equal(paid.statusLabel, "已支付")
+  assert.equal(paid.statusLabel, "待使用")
   assert.equal(paid.amount, "58.00")
   assert.equal(paid.amountLabel, "实付")
   assert.equal(paid.date, "入园日期 2026.11.13")
@@ -20,6 +20,55 @@ test("order presentation keeps payment and admission semantics distinct", async 
   assert.equal(presentOrder(room).amountLabel, "应付")
   assert.equal(presentOrder(recharge).amountLabel, "订单金额")
   assert.equal(presentOrder({ ...ticket, amount_cents: null }).amount, "—")
+})
+
+test("usage status, voucher numbers and refund eligibility follow the latest rules", async () => {
+  const { presentOrder } = await api()
+  const unused = { tickets: [{ ticket_no: "TC1", status: "UNUSED", category: "ADULT" }] }
+  assert.equal(presentOrder(ticket, unused).canRefund, true)
+  assert.deepEqual(presentOrder(ticket, unused).voucherNumbers, ["TC1"])
+  const used = presentOrder(ticket, { tickets: [{ ticket_no: "TC1", status: "USED" }] })
+  assert.equal(used.statusLabel, "已完成")
+  assert.equal(used.canRefund, false)
+  assert.deepEqual(used.voucherNumbers, ["TC1"])
+  assert.equal(presentOrder(room).statusLabel, "待付款")
+  const privateOrder = { ...room, status: "PAID" }
+  assert.equal(presentOrder(privateOrder, { ticket_no: "PV-booking-1", voucher_status: "UNUSED", booking_status: "CONFIRMED" }).canRefund, true)
+  assert.equal(presentOrder(privateOrder, { ticket_no: "PV-booking-1", voucher_status: "USED", booking_status: "IN_USE" }).statusLabel, "已完成")
+  const reviewed = presentOrder({ ...ticket, refund_application: { status: "PENDING" } }, unused)
+  assert.equal(reviewed.statusLabel, "退款审核中")
+  assert.equal(reviewed.canRefund, false)
+  assert.equal(presentOrder({ ...recharge, status: "PAID" }).statusLabel, "已完成")
+  assert.equal(presentOrder({ ...recharge, status: "PAID" }).canRefund, false)
+})
+
+test("eight isolated examples cover exactly the requested states", async () => {
+  const { createOrderExamples } = await import("../src/pages/orders/examples.js")
+  const { presentOrder } = await api()
+  const examples = createOrderExamples()
+  assert.equal(examples.length, 8)
+  assert.equal(new Set(examples.map(order => order.order_no)).size, 8)
+  for (const type of ["TICKET", "PRIVATE", "RECHARGE"]) {
+    const labels = examples.filter(order => order.order_type === type).map(order => presentOrder(order, order.example_detail).statusLabel)
+    assert.deepEqual(labels, type === "RECHARGE" ? ["待付款", "已完成"] : ["待付款", "待使用", "已完成"])
+  }
+})
+
+test("refund submission uses the member endpoint and excludes used/recharge orders", async () => {
+  const { createOrdersModel, presentOrder } = await api()
+  const posts = []
+  const model = createOrdersModel({ getToken: () => "token", request: async (path, options) => {
+    if (options?.method === "POST") { posts.push({ path, options }); return { status: "PENDING", reason: options.data.reason } }
+    if (path === "/orders") return [ticket, { ...recharge, status: "PAID" }]
+    return { tickets: [{ ticket_no: "TC1", status: "UNUSED" }] }
+  } })
+  await model.load()
+  await assert.rejects(model.submitRefund("R1", "退回"))
+  await model.submitRefund("T1", "行程变化")
+  assert.equal(posts.length, 1)
+  assert.equal(posts[0].path, "/orders/T1/refund-application")
+  assert.equal(presentOrder(model.state.orders[0], model.state.details.T1.data).statusLabel, "退款审核中")
+  await assert.rejects(model.submitRefund("T1", "重复申请"))
 })
 
 test("category filters use order_type and preserve source order", async () => {

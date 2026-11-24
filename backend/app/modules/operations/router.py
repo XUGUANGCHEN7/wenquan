@@ -46,6 +46,11 @@ class MockRefundRequest(BaseModel):
 def request_order_refund(order_no: str, payload: RefundRequest, request: Request,
                          auth: FinanceAuth, session: Session = Depends(get_db)):
     from app.modules.payments.refunds import RefundService
+    from app.modules.payments.refund_applications import block_pending_refund
+
+    order = session.scalar(select(Order).where(Order.order_no == order_no).with_for_update())
+    if order:
+        block_pending_refund(session, order.id)
 
     refund = RefundService.request_for_order(session, order_no, reason=payload.reason,
                                              amount_cents=payload.amount_cents)
@@ -199,6 +204,7 @@ def update_config(key: str, payload: ConfigRequest, request: Request,
     allowed = {
         "private_slot_price_cents", "deposit_amount_cents", "extension_price_cents", "extension_minutes",
         "ticket_weekday_cents", "ticket_weekend_cents", "ticket_child_cents",
+        "ticket_weekday_child_cents", "ticket_holiday_child_cents",
     }
     if key not in allowed or (key == "extension_minutes" and payload.value == 0):
         raise ApiError(422, "CONFIG_INVALID", "Configuration key or value is not supported")

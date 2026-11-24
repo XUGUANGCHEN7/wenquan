@@ -272,6 +272,8 @@
 
 .recharge-button {
   flex: none;
+  margin-left: auto;
+  margin-right: -8rpx;
   min-height: 58rpx;
   padding: 0 22rpx;
   display: flex;

@@ -13,11 +13,13 @@ from app.modules.rooms.operations import router as rooms_operations_router
 from app.modules.rooms.router import router as rooms_router
 from app.modules.tickets.router import router as tickets_router
 from app.modules.payments.router import router as payments_router
+from app.modules.payments.refund_applications import router as refund_applications_router
 from app.modules.wallet.router import router as wallet_router
 
 from app.modules.identity.router import router as identity_router
 
 api_router = APIRouter()
+api_router.include_router(refund_applications_router)
 api_router.include_router(identity_router)
 api_router.include_router(catalog_router)
 api_router.include_router(wallet_router)

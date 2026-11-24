@@ -1,0 +1,26 @@
+.order-detail-page { padding: 28rpx 28rpx calc(40rpx + env(safe-area-inset-bottom)); background: var(--sn-paper); }
+.detail-status-panel { position: relative; display: flex; align-items: center; box-sizing: border-box; min-height: 200rpx; padding: 32rpx 34rpx; overflow: hidden; border-radius: 28rpx; color: #fffdf8; background: var(--sn-green-deep); }
+.detail-status-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.detail-status-copy { position: relative; z-index: 1; max-width: 76%; }
+.detail-status-title { display: block; font-size: 50rpx; line-height: 1.35; font-weight: 600; }
+.detail-status-caption { display: block; margin-top: 14rpx; color: #f7f4e8; font-size: 24rpx; line-height: 1.6; }
+.detail-panel { margin-top: 22rpx; padding: 28rpx; border: 1rpx solid var(--sn-line); border-radius: 26rpx; background: var(--sn-card); box-shadow: var(--sn-shadow-soft); }
+.detail-qr { text-align: center; }
+.detail-qr-code { display: block; width: 320rpx; height: 320rpx; margin: 0 auto 20rpx; background: #fff; }
+.detail-section-title { display: block; margin-bottom: 22rpx; color: var(--sn-green-deep); font-size: 29rpx; font-weight: 600; line-height: 1.5; }
+.detail-product { display: flex; align-items: center; gap: 24rpx; }
+.detail-product-image { flex: none; width: 148rpx; height: 160rpx; border-radius: 18rpx; }
+.detail-product-copy { flex: 1; min-width: 0; }
+.detail-product-title { display: block; color: var(--sn-green-deep); font-size: 32rpx; font-weight: 600; line-height: 1.5; }
+.detail-product-spec { display: block; margin-top: 8rpx; color: var(--sn-muted); font-size: 23rpx; line-height: 1.6; overflow-wrap: anywhere; }
+.detail-voucher { margin-top: 20rpx; padding-top: 22rpx; border-top: 1rpx dashed var(--sn-line); }
+.detail-voucher-meta { display: flex; align-items: center; justify-content: space-between; gap: 18rpx; margin-bottom: 16rpx; color: var(--sn-muted); font-size: 23rpx; }
+.detail-voucher-status { padding: 5rpx 14rpx; border-radius: 24rpx; color: var(--sn-green); background: var(--sn-green-soft); }
+.detail-voucher-status.is-used { color: var(--sn-muted); background: #f0eee8; }
+.detail-info-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 26rpx; margin-top: 18rpx; font-size: 24rpx; line-height: 1.6; }
+.detail-info-row > text:first-child { flex: none; color: var(--sn-muted); }
+.detail-info-row > text:last-child { flex: 1; min-width: 0; text-align: right; color: var(--sn-ink); overflow-wrap: anywhere; }
+.detail-actions { display: flex; gap: 18rpx; }
+.detail-contact-button, .detail-refund-button { flex: 1; margin: 0; padding: 20rpx 14rpx; border-radius: 40rpx; font-size: 25rpx; line-height: 1.4; }
+.detail-contact-button { color: var(--sn-green); background: var(--sn-green-soft); }
+.detail-refund-button { color: var(--sn-gold-ink); background: var(--sn-gold-soft); }

@@ -11,8 +11,8 @@ test("member uni-app contains only member, ticket and private-room pages", () =>
   const pages = JSON.parse(fs.readFileSync(path.join(src, "pages.json"), "utf8"))
   assert.deepEqual(pages.pages.map((page) => page.path), [
     "pages/home/index", "pages/tickets/index", "pages/private-room/index",
-    "pages/orders/index", "pages/mine/index", "pages/wallet/index",
-    "pages/login/index", "pages/account-info/index",
+    "pages/orders/index", "pages/orders/detail", "pages/mine/index", "pages/wallet/index",
+    "pages/login/index", "pages/account-info/index", "pages/member-service/index", "pages/wallet/transactions",
   ])
   for (const page of pages.pages) {
     assert.ok(fs.existsSync(path.join(src, `${page.path}.vue`)), `${page.path}.vue`)

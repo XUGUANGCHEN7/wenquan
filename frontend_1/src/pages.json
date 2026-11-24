@@ -33,6 +33,12 @@
       }
     },
     {
+      "path": "pages/orders/detail",
+      "style": {
+        "navigationBarTitleText": "订单详情"
+      }
+    },
+    {
       "path": "pages/mine/index",
       "style": {
         "navigationBarTitleText": "会员中心"
@@ -54,6 +60,18 @@
       "path": "pages/account-info/index",
       "style": {
         "navigationBarTitleText": "手机号使用说明"
+      }
+    },
+    {
+      "path": "pages/member-service/index",
+      "style": {
+        "navigationBarTitleText": "会员服务"
+      }
+    },
+    {
+      "path": "pages/wallet/transactions",
+      "style": {
+        "navigationBarTitleText": "交易明细"
       }
     }
   ],

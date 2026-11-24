@@ -7,6 +7,10 @@
 .ticket-intro image { width: 220rpx; height: 165rpx; border-radius: 20rpx; }
 .tips { margin-top: 20rpx; padding: 22rpx; border-radius: 18rpx; color: #6f6759; background: #eee7d6; font-size: 22rpx; line-height: 1.6; }
 .form-section { margin-top: 36rpx; }
+.ticket-types { display: flex; gap: 18rpx; }
+.ticket-types button { flex: 1; min-width: 0; margin: 0; padding: 26rpx 16rpx; border: 1rpx solid var(--sn-line); border-radius: 20rpx; color: var(--sn-green); background: #fffdf8; font-size: 28rpx; }
+.ticket-types button.active { color: #fff; border-color: var(--sn-green); background: var(--sn-green); }
+.ticket-price-state { display: block; margin-top: 18rpx; color: var(--sn-muted); font-size: 23rpx; line-height: 1.6; }
 .step-head { display: flex; align-items: center; gap: 18rpx; margin-bottom: 18rpx; }
 .step-head > text { color: #b9a47a; font: 34rpx Georgia,serif; }
 .step-head view text { display: block; font-size: 28rpx; font-weight: 600; }
@@ -32,6 +36,26 @@
 .counter { display: flex; align-items: center; gap: 24rpx; }
 .counter button { width: 54rpx; height: 54rpx; display: flex; align-items: center; justify-content: center; border: 1rpx solid #aac6bd; border-radius: 50%; color: #327969; background: #fff; font-size: 30rpx; }
 .counter text { min-width: 28rpx; text-align: center; font-weight: 650; }
+.tickets-page .payment-methods { display: flex; gap: 18rpx; }
+.tickets-page .ticket-payment-card { box-sizing: border-box; flex: 1; min-width: 0; min-height: 108rpx; display: flex; align-items: center; gap: 14rpx; margin: 0; padding: 22rpx 20rpx; border: 2rpx solid #e9dfd1; border-radius: 20rpx; background: #fffdf8; color: #38453e; text-align: left; line-height: 1.4; }
+.tickets-page .ticket-payment-card::after { border: 0; }
+.tickets-page .ticket-payment-card.is-selected { border-color: var(--sn-green); background: #f0f7f2; box-shadow: 0 3rpx 10rpx rgba(36,107,97,.06); color: var(--sn-green-deep); }
+.ticket-payment-label { white-space: nowrap; font-size: 28rpx; font-weight: 600; }
+.ticket-payment-icon { position: relative; flex: none; width: 46rpx; height: 46rpx; }
+.wechat-bubble { position: absolute; width: 33rpx; height: 27rpx; border-radius: 50%; background: #169a58; }
+.wechat-bubble::before { content: ""; position: absolute; left: 9rpx; top: 9rpx; width: 3rpx; height: 3rpx; border-radius: 50%; background: #fff; box-shadow: 12rpx 0 0 #fff; }
+.wechat-bubble::after { content: ""; position: absolute; left: 6rpx; bottom: -3rpx; width: 8rpx; height: 8rpx; background: inherit; transform: skewY(-30deg); }
+.bubble-back { top: 5rpx; left: 0; }
+.bubble-front { right: 0; bottom: 4rpx; border: 2rpx solid #fffdf8; background: #208757; }
+.wallet-payment-icon { color: #bb8b48; display: flex; align-items: center; }
+.wallet-outline { position: relative; box-sizing: border-box; width: 42rpx; height: 30rpx; border: 3rpx solid currentColor; border-radius: 4rpx; }
+.wallet-outline::before { content: ""; position: absolute; left: 2rpx; top: -10rpx; width: 25rpx; height: 9rpx; border: 3rpx solid currentColor; border-bottom: 0; border-radius: 3rpx 3rpx 0 0; transform: rotate(-12deg); }
+.wallet-clasp { position: absolute; right: -3rpx; top: 8rpx; width: 15rpx; height: 10rpx; border: 2rpx solid currentColor; border-radius: 3rpx 0 0 3rpx; background: #fffdf8; }
+.wallet-clasp::after { content: ""; position: absolute; left: 4rpx; top: 3rpx; width: 3rpx; height: 3rpx; border-radius: 50%; background: currentColor; }
+.ticket-payment-check { position: relative; flex: none; box-sizing: border-box; width: 30rpx; height: 30rpx; margin-left: auto; border: 2rpx solid #d5cfc3; border-radius: 50%; }
+.is-selected .ticket-payment-check { border-color: var(--sn-green); background: var(--sn-green); }
+.is-selected .ticket-payment-check::after { content: ""; position: absolute; left: 8rpx; top: 4rpx; width: 7rpx; height: 13rpx; border: solid #fff; border-width: 0 3rpx 3rpx 0; transform: rotate(45deg); }
+.ticket-payment-pressed { opacity: .75; }
 .bottom-bar { min-height: 126rpx; position: fixed; right: 0; bottom: 0; left: 0; z-index: 10; padding: 17rpx 30rpx calc(17rpx + env(safe-area-inset-bottom)); display: flex; align-items: center; justify-content: space-between; border-top: 1rpx solid var(--line); background: rgba(255,255,255,.98); }
 .bottom-bar > view > text:first-child { margin-right: 12rpx; color: #78817d; font-size: 22rpx; }
 .bottom-bar .total { color: #2f6e62; font-size: 44rpx; font-weight: 700; }

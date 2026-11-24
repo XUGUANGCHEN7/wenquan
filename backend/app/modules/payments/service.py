@@ -65,8 +65,8 @@ class PaymentService:
             payment.status = "SUCCESS"
             payment.channel_transaction_id = f"wallet-{order.order_no}"
             payment.confirmed_at = utcnow()
-            order.status = PaymentService._dispatch(session, order)
             order.paid_at = payment.confirmed_at
+            order.status = PaymentService._dispatch(session, order)
         session.flush()
         return payment
 
@@ -88,7 +88,7 @@ class PaymentService:
         payment.status = "SUCCESS"
         payment.channel_transaction_id = f"mock-{payment.payment_no}"
         payment.confirmed_at = utcnow()
-        order.status = PaymentService._dispatch(session, order)
         order.paid_at = payment.confirmed_at
+        order.status = PaymentService._dispatch(session, order)
         session.flush()
         return payment

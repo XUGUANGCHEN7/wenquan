@@ -17,8 +17,10 @@ const configMeta: Record<string, ConfigMeta> = {
   extension_price_cents: { label: "加钟价格", description: "每办理一次加钟的收费价格，单位：元。", money: true },
   extension_minutes: { label: "加钟时长", description: "每次加钟延长的时长，单位：分钟。", money: false },
   ticket_weekday_cents: { label: "工作日门票", description: "公共浴室工作日成人票价，单位：元。", money: true },
-  ticket_weekend_cents: { label: "周末及节假日门票", description: "公共浴室周末及节假日成人票价，单位：元。", money: true },
-  ticket_child_cents: { label: "儿童票", description: "公共浴室儿童票价，单位：元。", money: true },
+  ticket_weekend_cents: { label: "节假日成人票", description: "周六、周日及后台配置节假日适用，单位：元。", money: true },
+  ticket_weekday_child_cents: { label: "工作日儿童票", description: "非节假日的周一至周五适用，单位：元。", money: true },
+  ticket_holiday_child_cents: { label: "节假日儿童票", description: "周六、周日及后台配置节假日适用，单位：元。", money: true },
+  ticket_child_cents: { label: "旧版日期订单儿童票", description: "兼容原按日期购票；新票种使用各自儿童票价，单位：元。", money: true },
 }
 const configs = ref<Config[]>([])
 const configDrafts = ref<Record<string, string>>({})
@@ -181,7 +183,8 @@ onMounted(load)
       <section class="panel"><div class="panel-head"><h2>基础价格与时长</h2></div>
         <div v-for="item in configs" :key="item.key" class="config-row"><div><strong>{{ configLabel(item) }}</strong><small>{{ configDescription(item) }}</small></div><input v-if="isMoneyConfig(item)" v-model="configDrafts[item.key]" type="text" inputmode="decimal" placeholder="0.00" aria-label="金额（元）" @blur="normalizeConfigDraft(item)" /><input v-else v-model="configDrafts[item.key]" type="number" min="0" step="1" aria-label="整数" /><button class="mini-button" @click="saveConfig(item)">保存</button></div>
       </section>
-      <section class="panel"><div class="panel-head"><h2>节假日票种价格</h2></div>
+      <section class="panel"><div class="panel-head"><h2>节假日日历与旧版日期票价</h2></div>
+        <p class="hint">此处登记节假日日期。新购公共票使用上方工作日、节假日成人及儿童四项票价；单独日期的价格用于原按日期购票订单。</p>
         <form class="form-stack" @submit.prevent="savePrice"><label>日期<input v-model="visitDate" type="date" /></label><div class="form-row"><label>成人票价（元）<input v-model="adultYuan" type="text" inputmode="decimal" placeholder="0.00" @blur="adultYuan = normalizeYuan(adultYuan)" /></label><label>儿童票价（元）<input v-model="childYuan" type="text" inputmode="decimal" placeholder="0.00" @blur="childYuan = normalizeYuan(childYuan)" /></label></div><button class="button secondary">保存当日规则</button></form>
       </section>
       <section class="panel"><div class="panel-head"><h2>充值活动（充本金赠余额）</h2></div>

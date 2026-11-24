@@ -24,6 +24,13 @@ def ticket_prices(visit_date: date, session: Session = Depends(get_db)):
     return {"visit_date": visit_date, "adult_cents": adult, "child_cents": child, "currency": "CNY"}
 
 
+@router.get("/ticket-products")
+def ticket_products(session: Session = Depends(get_db)):
+    return [{"day_type": kind, "name": name, "adult_cents": prices[0], "child_cents": prices[1], "valid_days": 30}
+            for kind, name in (("WEEKDAY", "工作日票"), ("HOLIDAY", "节假日票"))
+            for prices in [TicketService.product_prices(session, kind)]]
+
+
 @router.get("/recharge-activities")
 def recharge_activities(session: Session = Depends(get_db)):
     activities = session.scalars(

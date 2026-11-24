@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
@@ -19,7 +19,8 @@ DeskAuth = Annotated[AuthContext, Depends(require_roles(Role.FRONTDESK, Role.ADM
 
 
 class TicketOrderRequest(BaseModel):
-    visit_date: date
+    visit_date: date | None = None
+    day_type: Literal["WEEKDAY", "HOLIDAY"] | None = None
     adult_count: int = Field(ge=0, le=20)
     child_count: int = Field(ge=0, le=20)
 
@@ -47,8 +48,9 @@ def order_detail(order_no: str, auth: MemberAuth, session: Session = Depends(get
     batch = session.get(TicketBatch, order.business_id)
     tickets = session.scalars(select(Ticket).where(Ticket.batch_id == batch.id)
                               .order_by(Ticket.visitor_index)).all()
-    return {"order_no": order.order_no, "status": order.status, "amount_cents": order.amount_cents,
-            "visit_date": batch.visit_date, "tickets": [
+    return {**TicketService.metadata(session, batch), "order_no": order.order_no, "status": order.status, "amount_cents": order.amount_cents,
+            "visit_date": batch.visit_date, "adult_count": batch.adult_count, "child_count": batch.child_count,
+            "quantity": batch.adult_count + batch.child_count, "tickets": [
                 {"ticket_no": item.ticket_no, "category": item.category, "price_cents": item.price_cents,
                  "status": item.status} for item in tickets]}
 

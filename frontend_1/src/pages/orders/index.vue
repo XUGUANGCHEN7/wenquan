@@ -1,41 +1,75 @@
 <script setup>
-import { computed } from "vue"
+import { computed, ref } from "vue"
 import { onHide, onShow, onUnload } from "@dcloudio/uni-app"
 import { request } from "../../utils/api.js"
 import { getToken, redirectToLogin } from "../../utils/session.js"
 import { categories, createOrdersModel, presentOrder } from "./model.js"
+import { getOrderExamples } from "./examples.js"
+import { orderDetailUrl } from "./navigation.js"
 
 const model = createOrdersModel({ request, getToken })
 const { state } = model
+const refundTarget = ref("")
+const refundReason = ref("")
+const refundBusy = ref(false)
+const refundError = ref("")
+const memberFilter = ref("")
+const voucherLoading = computed(() => memberFilter.value === "VOUCHERS" && Object.values(state.details).some(detail => detail.loading))
 const cards = computed(() => model.visibleOrders.value.map(order => ({
   ...presentOrder(order, state.details[order.order_no]?.data),
   detail: state.details[order.order_no],
-})))
-onShow(model.load)
+})).filter(order => memberFilter.value === "REFUND" ? !!order.refund_application || order.status === "REFUNDED" : memberFilter.value === "VOUCHERS" ? order.statusKey === "UNUSED" : true))
+onShow(() => {
+  const filter = uni.getStorageSync("member_order_filter")
+  if (["ALL", "TICKET", "PRIVATE", "RECHARGE", "REFUND", "VOUCHERS"].includes(filter)) {
+    uni.removeStorageSync("member_order_filter")
+    memberFilter.value = ["REFUND", "VOUCHERS"].includes(filter) ? filter : ""
+    state.category = ["TICKET", "PRIVATE", "RECHARGE"].includes(filter) ? filter : "ALL"
+  }
+  return state.exampleMode ? loadExamples() : model.load()
+})
 onHide(model.invalidate)
 onUnload(model.invalidate)
 
 function selectCategory(value) {
+  memberFilter.value = ""
   state.category = value
   state.expanded = ""
 }
+function loadExamples() {
+  model.invalidate()
+  state.exampleMode = true
+  state.guest = false
+  state.error = ""
+  state.orders = getOrderExamples()
+  for (const order of state.orders) state.details[order.order_no] = { loading: false, data: order.example_detail, error: "" }
+}
+function openRefund(orderNo) {
+  refundTarget.value = orderNo
+  refundReason.value = ""
+  refundError.value = ""
+}
+async function submitRefund() {
+  if (refundBusy.value) return
+  refundBusy.value = true
+  refundError.value = ""
+  try {
+    const application = await model.submitRefund(refundTarget.value, refundReason.value)
+    if (application) { refundTarget.value = ""; uni.showToast({ title: state.exampleMode ? "示例申请已演示" : "申请已提交，等待审核", icon: "none" }) }
+  } catch (error) { refundError.value = error.message || "申请失败，请重试" }
+  finally { refundBusy.value = false }
+}
 function goHome() { uni.switchTab({ url: "/pages/home/index" }) }
 function goLogin() { redirectToLogin("/pages/orders/index") }
-function ticketStatus(status) {
-  return { UNUSED: "待核验", USED: "已入园", REFUNDED: "已退款", INVALID: "已失效" }[status] || status
+function goDetails(order) {
+  uni.navigateTo({ url: orderDetailUrl(order, state.exampleMode) })
 }
-function slotTime(value) { return value ? String(value).replace("T", " ").slice(0, 16) : "待确认" }
 </script>
 
 <template>
   <view class="page orders-page">
-    <view class="orders-heading">
-      <text class="orders-eyebrow">MY JOURNEYS</text>
-      <text class="orders-title sn-serif">我的订单</text>
-      <view class="orders-heading-line" />
-      <view class="orders-steam steam-one" />
-      <view class="orders-steam steam-two" />
-    </view>
+    <view v-if="memberFilter" class="orders-member-filter"><text>{{ memberFilter === 'REFUND' ? '退款记录' : '我的卡券 · 待使用' }}</text><button @tap="selectCategory('ALL')">查看全部订单</button></view>
+    <view v-if="state.exampleMode" class="orders-example-note">示例预览 · 非真实购买记录，示例票券号不能用于前台核销。真实票券需付款后由服务端签发。</view>
 
     <view class="orders-tabs">
       <button
@@ -51,7 +85,7 @@ function slotTime(value) { return value ? String(value).replace("T", " ").slice(
       <text class="orders-empty-copy">你的温泉旅程，都在这里</text>
       <button class="orders-primary" @tap="goLogin">登录 / 注册</button>
     </view>
-    <view v-else-if="state.loading" class="orders-empty">
+    <view v-else-if="state.loading || voucherLoading" class="orders-empty">
       <view class="orders-loading" />
       <text class="orders-empty-copy">正在读取订单…</text>
     </view>
@@ -72,24 +106,34 @@ function slotTime(value) { return value ? String(value).replace("T", " ").slice(
         <view class="order-copy">
           <view class="order-header">
             <text class="order-title sn-serif">{{ item.title }}</text>
-            <text class="order-status" :class="'status-' + item.status">{{ item.statusLabel }}</text>
+            <text class="order-status" :class="'status-' + item.statusKey">{{ item.statusLabel }}</text>
           </view>
           <view class="order-meta">
-            <text v-if="item.order_type !== 'PRIVATE'" class="order-description">{{ item.summary }}</text>
+            <text class="order-description">{{ item.specification }}</text>
             <text v-if="item.date" class="order-date">{{ item.date }}</text>
-            <text v-if="item.order_type === 'PRIVATE'" class="order-description">{{ item.summary }}</text>
             <text v-if="item.detail?.loading" class="order-detail-hint">正在读取{{ item.order_type === 'TICKET' ? '票券' : '预约' }}信息…</text>
-            <text class="order-no">订单号 {{ item.order_no }}</text>
+            <text v-if="item.refund_application?.status === 'REJECTED'" class="order-detail-hint">退款申请未通过：{{ item.refund_application.review_reason }}</text>
           </view>
           <view class="order-footer">
             <view class="order-amount">
               <text class="order-amount-label">{{ item.amountLabel }}</text>
               <text class="order-price">{{ item.amount === '—' ? '金额待确认' : '¥' + item.amount }}</text>
             </view>
-            <button class="order-detail-button" hover-class="orders-button-pressed" @tap="model.toggle(item)">
-              {{ state.expanded === item.order_no ? '收起详情' : '查看详情' }}
+            <button class="order-detail-button" hover-class="orders-button-pressed" @tap="goDetails(item)">
+              查看详情
             </button>
           </view>
+          <button v-if="item.canRefund" class="order-refund-button" @tap="openRefund(item.order_no)">申请退款</button>
+        </view>
+      </view>
+      <view v-if="refundTarget === item.order_no && item.canRefund" class="order-refund-form">
+        <text>申请整单退款</text>
+        <text class="order-detail-hint">提交后等待审核，审核期间暂停核销。</text>
+        <textarea v-model="refundReason" class="order-refund-reason" maxlength="500" placeholder="请填写退款原因" />
+        <text v-if="refundError" class="order-refund-error">{{ refundError }}</text>
+        <view class="order-refund-actions">
+          <button class="order-detail-button" :disabled="refundBusy" @tap="refundTarget = ''">取消</button>
+          <button class="order-detail-button" :disabled="refundBusy" @tap="submitRefund">{{ refundBusy ? '正在提交…' : '提交申请' }}</button>
         </view>
       </view>
 
@@ -97,27 +141,7 @@ function slotTime(value) { return value ? String(value).replace("T", " ").slice(
         <text>详情读取失败：{{ item.detail.error }}</text>
         <button class="order-retry" @tap="model.ensureDetail(item)">重试</button>
       </view>
-      <view v-if="state.expanded === item.order_no" class="order-detail">
-        <template v-if="item.order_type === 'TICKET' && item.detail?.data">
-          <text class="order-detail-title">票券信息</text>
-          <text>入园日期 {{ item.detail.data.visit_date }}</text>
-          <view v-for="ticket in item.detail.data.tickets" :key="ticket.ticket_no" class="ticket-line">
-            <text>{{ ticket.category === 'ADULT' ? '成人票' : ticket.category === 'CHILD' ? '儿童票' : ticket.category }} · {{ ticketStatus(ticket.status) }}</text>
-            <text class="ticket-number">{{ ticket.ticket_no }}</text>
-          </view>
-          <text v-if="!item.detail.data.tickets?.length">支付完成后逐人生成票券</text>
-        </template>
-        <template v-else-if="item.order_type === 'PRIVATE' && item.detail?.data">
-          <text class="order-detail-title">预约信息</text>
-          <text>预约日期 {{ item.detail.data.visit_date }}</text>
-          <text>预约场次 {{ slotTime(item.detail.data.start_at) }} — {{ slotTime(item.detail.data.end_at) }}</text>
-          <text>{{ item.summary }}</text>
-        </template>
-        <text v-else-if="item.order_type === 'RECHARGE'">储值结果以服务端账本和支付状态为准</text>
-        <text v-else-if="item.detail?.error">请重试读取详情</text>
-        <text v-else-if="item.detail?.loading">正在读取详情…</text>
-        <text v-else>暂无更多详情</text>
-      </view>
+
     </view>
   </view>
 </template>

@@ -76,6 +76,7 @@ test('return navigation permits only known member pages and handles tabs', () =>
   assert.equal(safeReturnTo('https://evil.example'), '/pages/home/index')
   assert.equal(safeReturnTo('/pages/unknown/index'), '/pages/home/index')
   assert.equal(safeReturnTo('/pages/tickets/index?source=share'), '/pages/tickets/index?source=share')
+  assert.equal(safeReturnTo('/pages/orders/detail?id=ord-real'), '/pages/orders/detail?id=ord-real')
   resumeAfterLogin('/pages/orders/index?from=share')
   assert.deepEqual(navigations.pop(), ['switchTab', '/pages/orders/index'])
   resumeAfterLogin('/pages/private-room/index?day=1')

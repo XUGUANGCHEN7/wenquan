@@ -1,27 +1,30 @@
 <script setup>
 import { computed, ref } from "vue"
-import { onShow } from "@dcloudio/uni-app"
+import { onLoad, onShow } from "@dcloudio/uni-app"
 import config from "../../config"
 import { request, showError } from "../../utils/api"
 import { formatMoney } from "../../utils/money"
 
 const balance = ref("0.00")
 const plans = ref([])
-const entries = ref([])
 const selected = ref(0)
 const loading = ref(true)
 const submitting = ref(false)
 const selectedPlan = computed(() => plans.value[selected.value] || null)
+let focusEntries = false
+onLoad(options => {
+  focusEntries = options.section === "entries"
+  if (focusEntries) uni.redirectTo({ url: "/pages/wallet/transactions" })
+})
 
-onShow(() => loadWallet())
+onShow(() => { if (!focusEntries) return loadWallet() })
 
 async function loadWallet() {
   loading.value = true
   try {
-    const [wallet, plansData, entriesData] = await Promise.all([
+    const [wallet, plansData] = await Promise.all([
       request("/wallet/balance"),
       request("/catalog/recharge-activities", { auth: false }),
-      request("/wallet/entries"),
     ])
     balance.value = formatMoney(wallet.available_cents)
     plans.value = plansData.map((plan) => ({
@@ -29,17 +32,14 @@ async function loadWallet() {
       amount: formatMoney(plan.principal_cents),
       gift: formatMoney(plan.gift_cents),
     }))
-    entries.value = entriesData.map((entry) => ({
-      ...entry,
-      delta: formatMoney(entry.delta_cents),
-      after: formatMoney(entry.balance_after_cents),
-    }))
   } catch (error) {
     showError(error)
   } finally {
     loading.value = false
   }
 }
+
+function goTransactions() { uni.navigateTo({ url: "/pages/wallet/transactions" }) }
 
 function selectPlan(index) {
   selected.value = index
@@ -73,29 +73,27 @@ async function recharge() {
 <template>
   <view class="page wallet-page">
     <view class="wallet-card">
-      <text>当前储值余额</text>
+      <image class="wallet-card-background" src="/static/wallet/balance-background.jpg" mode="aspectFill" />
+      <text class="wallet-card-title">当前储值余额</text>
       <text class="balance">
         <text>¥</text>
         {{ balance }}
       </text>
-      <text>与独立点餐小程序共用同一会员账本</text>
-      <view class="ring one" />
-      <view class="ring two" />
+      <button class="transactions-link" @tap="goTransactions">交易明细</button>
     </view>
     <view class="section-head wallet-head">
       <view>
-        <text class="en">RECHARGE BONUS</text>
         <text class="title">选择储值金额</text>
       </view>
     </view>
     <view class="plans">
       <button v-for="(item, index) in plans" :key="item.id" :class="{ active: selected === index }" @tap="selectPlan(index)">
-        <text class="popular">{{ item.name }}</text>
-        <text>储值</text>
-        <text>¥{{ item.amount }}</text>
-        <text>赠送 ¥{{ item.gift }}</text>
+        <view class="plan-copy"><text class="plan-name">{{ item.name }}</text><text class="plan-caption">会员储值</text></view>
+        <view class="plan-value"><text class="plan-amount">¥{{ item.amount }}</text><text class="plan-gift">赠送 ¥{{ item.gift }}</text></view>
+        <view class="plan-check" />
       </button>
     </view>
+    <!--
     <view class="benefits">
       <text class="benefit-title">账本说明</text>
       <view>
@@ -108,27 +106,14 @@ async function recharge() {
       <view>
         <text>02</text>
         <view>
-          <text>服务端确认</text>
-          <text>消费先扣本金，再扣赠送金；余额不由客户端修改</text>
-        </view>
-      </view>
-      <view>
-        <text>03</text>
-        <view>
           <text>不支持提现</text>
           <text>一期不实现储值余额自动退还或提现</text>
         </view>
       </view>
     </view>
-    <view class="entries">
-      <text class="entries-title">最近账本记录</text>
-      <view v-for="item in entries" :key="item.reference" class="entry-line">
-        <text>{{ item.entry_type }} · {{ item.reference }}</text>
-        <text>{{ item.delta }} · 余 {{ item.after }}</text>
-      </view>
-      <view v-if="!loading && entries.length === 0" class="entry-empty">暂无储值或消费记录</view>
-    </view>
+
     <view class="agreement">当前为开发 Mock 支付，正式环境需配置微信支付商户能力。</view>
+-->
     <button
       class="recharge"
       :loading="submitting"
