@@ -2,10 +2,10 @@
 
 from app.core.database import Base
 from app.modules.access.models import Card, CardBinding, Deposit, DepositGroup, Locker, LockerReservation, Visit
-from app.modules.catalog.models import BusinessConfig, RechargeActivity, TicketPriceRule
+from app.modules.catalog.models import BusinessConfig, RechargeActivity, RechargeActivityWindow, TicketPriceRule
 from app.modules.devices.models import DeviceTask
 from app.modules.dining.models import FoodOrder, FoodOrderItem, MenuItem, Merchant, RoomQrCode
-from app.modules.identity.models import Identity, Member
+from app.modules.identity.models import Identity, Member, MemberSession
 from app.modules.payments.models import AuditEvent, Order, Payment, Refund
 from app.modules.rooms.models import CleaningRecord, PrivateBooking, Room, RoomBlock, RoomExtension, RoomUse
 from app.modules.tickets.models import Admission, Ticket, TicketBatch

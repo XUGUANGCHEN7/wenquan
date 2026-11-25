@@ -1,0 +1,38 @@
+.mine-page { min-height: 100vh; background: #f8f6f1; color: #263f38; }
+.member-header { position: relative; box-sizing: border-box; height: 360rpx; padding: 30rpx 36rpx; overflow: hidden; color: #fffdf3; }
+.member-header-bg,.member-header-shade { position: absolute; inset: 0; width: 100%; height: 100%; }
+.member-header-shade { background: linear-gradient(180deg,rgba(10,65,55,.1) 55%,#f8f6f1); }
+.member-brand { position: relative; font-size: 25rpx; letter-spacing: 3rpx; }
+.member-profile { position: relative; display: flex; align-items: center; gap: 20rpx; margin-top: 36rpx; }
+.member-avatar { flex: none; width: 96rpx; height: 96rpx; border: 3rpx solid rgba(255,255,255,.5); border-radius: 50%; background: #e4efdf; }
+.member-profile-copy { flex: 1; min-width: 0; }
+.member-name-row { display: flex; align-items: center; gap: 12rpx; }
+.member-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 30rpx; font-weight: 600; }
+.member-badge { flex: none; padding: 3rpx 12rpx; border-radius: 18rpx; background: #f2dbad; color: #5e4b2b; font-size: 19rpx; }
+.member-welcome { display: block; margin-top: 12rpx; color: #eef2e5; font-size: 22rpx; line-height: 1.6; }
+.profile-arrow { font-size: 40rpx; }
+.mine-content { position: relative; margin-top: -106rpx; padding: 0 28rpx 50rpx; }
+.member-balance-card { position: relative; overflow: hidden; border-radius: 30rpx; border: 1rpx solid #eee2c7; background: #f5ead1; box-shadow: 0 8rpx 20rpx rgba(115,96,54,.08); }
+.balance-background { position: absolute; width: 100%; height: 100%; inset: 0; }
+.balance-content { position: relative; padding: 26rpx 30rpx; }
+.balance-heading { display: flex; align-items: center; justify-content: space-between; font-size: 26rpx; font-weight: 600; }
+.mine-page button::after { border: 0; }
+.mine-page .balance-details { margin: 0; padding: 8rpx 20rpx; border-radius: 30rpx; color: #8b7654; background: rgba(255,255,255,.65); font-size: 21rpx; line-height: 1.4; }
+.balance-amount { display: block; margin-top: 8rpx; color: #246b61; font-size: 62rpx; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+.balance-amount > text { margin-right: 8rpx; font-size: 30rpx; }
+.balance-description { display: block; margin-top: 6rpx; font-size: 22rpx; color: #62756b; }
+.balance-actions { display: flex; justify-content: flex-end; gap: 18rpx; margin-top: 24rpx; }
+.mine-page .balance-actions button { flex: 1; min-width: 0; margin: 0; padding: 13rpx 12rpx; min-height: 66rpx; display: flex; justify-content: center; align-items: center; border-radius: 36rpx; font-size: 25rpx; line-height: 1.4; }
+.mine-page .recharge-button { border: 2rpx solid #246b61; border-radius: 36rpx; background: #246b61; color: #fff; font-size: 26rpx; }
+.mine-page .voucher-button { border: 2rpx solid #688f7d; background: rgba(255,255,255,.2); color: #263f38; }
+.member-white-card { margin-top: 24rpx; padding: 24rpx 20rpx; border-radius: 26rpx; background: #fff; }
+.member-card-head { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; }
+.member-card-head > text { border-left: 6rpx solid #4c927a; padding-left: 12rpx; font-size: 27rpx; font-weight: 600; }
+.mine-page .member-card-head button { flex: none; margin: 0; padding: 6rpx 0; color: #89938d; background: transparent; font-size: 21rpx; line-height: 1.4; }
+.member-login-card { padding: 32rpx; border: 1rpx solid #eee2c7; border-radius: 30rpx; background: #fffdf8; }
+.login-title { display: block; font-size: 30rpx; font-weight: 600; }
+.login-description { display: block; margin: 16rpx 0 24rpx; color: #89938d; font-size: 23rpx; }
+.member-error { display: block; margin-top: 14rpx; font-size: 23rpx; color: #a33e2e; line-height: 1.6; overflow-wrap: anywhere; }
+.mine-page .retry-link { margin: 8rpx 0 0; padding: 4rpx 0; text-align: left; color: #246b61; background: transparent; font-size: 23rpx; }
+.mine-page .dev-login-button { margin-top: 18rpx; background: #f4ead9; color: #8a6a3c; font-size: 23rpx; border-radius: 18rpx; }
+.dev-hint { display: block; margin-top: 8rpx; text-align: center; color: #89938d; font-size: 20rpx; }

@@ -19,12 +19,15 @@ htmlcov/
 # Node
 node_modules/
 dist/
+unpackage/
+.hbuilderx/
 .vite/
 coverage/
 *.tsbuildinfo
 
 # Local databases and runtime
 *.sqlite3
+*.sqlite3.backup-*
 *.db
 *.log
 *.err

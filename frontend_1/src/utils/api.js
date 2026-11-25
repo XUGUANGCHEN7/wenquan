@@ -1,0 +1,57 @@
+import config from "../config.js"
+import { getToken, clearSession, redirectToLogin } from "./session.js"
+
+export function request(path, { method = "GET", data, auth = true } = {}) {
+  const token = auth ? getToken() : ""
+  if (auth && !token) {
+    redirectToLogin()
+    const error = new Error("请先登录并完成手机号注册")
+    error.code = "AUTH_REQUIRED"
+    return Promise.reject(error)
+  }
+  return new Promise((resolve, reject) => {
+    uni.request({
+      url: `${config.apiBase}${path}`,
+      method,
+      data,
+      header: {
+        "Content-Type": "application/json",
+        ...(auth && token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      success(response) {
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          resolve(response.data)
+          return
+        }
+        const body = response.data || {}
+        if (auth && token === getToken() && (response.statusCode === 401 || body.code === "MEMBER_DISABLED")) {
+          clearSession()
+          redirectToLogin()
+        }
+        const error = new Error(body.message || `请求失败（${response.statusCode}）`)
+        error.code = body.code || "HTTP_ERROR"
+        reject(error)
+      },
+      fail(error) {
+        reject(new Error(error.errMsg || "网络连接失败，请稍后重试"))
+      },
+    })
+  })
+}
+
+export async function payOrder(orderNo, method) {
+  const payment = await request(`/orders/${orderNo}/payments`, {
+    method: "POST",
+    data: { method: method.toLowerCase() },
+  })
+  if (method === "WECHAT") {
+    if (!config.development) throw new Error("正式微信支付适配器尚未配置")
+    await request(`/payments/${payment.payment_no}/mock-confirm`, { method: "POST" })
+  }
+  return request(`/orders/${orderNo}`)
+}
+
+export function showError(error) {
+  if (["AUTH_REQUIRED", "AUTH_INVALID", "REGISTRATION_REQUIRED", "MEMBER_DISABLED"].includes(error.code)) return
+  uni.showToast({ title: (error.message || "操作失败").slice(0, 40), icon: "none", duration: 3000 })
+}

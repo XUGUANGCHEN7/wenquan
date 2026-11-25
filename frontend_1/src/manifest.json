@@ -1,0 +1,17 @@
+{
+  "name": "蜀南温泉",
+  "appid": "__UNI__SHUNAN_MEMBER",
+  "description": "蜀南温泉购票会员小程序",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "mp-weixin": {
+    "appid": "wx126ab555de571987",
+    "setting": {
+      "urlCheck": false,
+      "es6": true,
+      "minified": true
+    },
+    "usingComponents": true
+  }
+}

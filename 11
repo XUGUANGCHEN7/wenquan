@@ -1,1 +1,12 @@
-11
+1.后端运行
+Set-Location C:\Users\16861\.cline\worktrees\82ef6\wenquan\backend
+..\.venv\Scripts\python.exe -m alembic upgrade head
+..\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --reload --port 8000
+
+2.web端运行
+Set-Location C:\Users\16861\.cline\worktrees\82ef6\wenquan\frontend_web
+
+Copy-Item .env.example .env
+npm install
+npm run dev
+http://localhost:5173

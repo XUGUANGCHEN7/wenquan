@@ -10,7 +10,8 @@ from app.modules.wallet.service import WalletService
 
 class RefundService:
     @staticmethod
-    def request_for_order(session: Session, order_no: str, *, reason: str) -> Refund:
+    def request_for_order(session: Session, order_no: str, *, reason: str,
+                          amount_cents: int | None = None) -> Refund:
         order = session.scalar(select(Order).where(Order.order_no == order_no).with_for_update())
         if order is None:
             raise ApiError(404, "ORDER_NOT_FOUND", "Order not found")
@@ -26,7 +27,14 @@ class RefundService:
         payment = session.scalar(select(Payment).where(Payment.order_id == order.id).with_for_update())
         if payment is None or payment.status != "SUCCESS":
             raise ApiError(409, "ORIGINAL_PAYMENT_INVALID", "Original payment is not confirmed")
-        if order.order_type == "TICKET":
+        amount = order.amount_cents if amount_cents is None else amount_cents
+        if amount <= 0 or amount > order.amount_cents:
+            raise ApiError(422, "REFUND_AMOUNT_INVALID", "退款金额必须大于 0 且不能超过订单金额")
+        full_refund = amount == order.amount_cents
+        if not full_refund and payment.method == "BALANCE":
+            raise ApiError(409, "PARTIAL_BALANCE_REFUND_UNSUPPORTED",
+                           "余额订单暂不支持部分退款，请按原订单全额冲回或联系财务确认")
+        if full_refund and order.order_type == "TICKET":
             from app.modules.tickets.models import Ticket, TicketBatch
 
             batch = session.get(TicketBatch, order.business_id)
@@ -34,7 +42,7 @@ class RefundService:
                 if ticket.status == "USED":
                     raise ApiError(409, "TICKET_ALREADY_USED", "A used ticket cannot use this manual refund flow")
                 ticket.status = "VOID"
-        if order.order_type == "PRIVATE":
+        if full_refund and order.order_type == "PRIVATE":
             from app.modules.rooms.models import PrivateBooking
 
             booking = session.get(PrivateBooking, order.business_id, with_for_update=True)
@@ -49,7 +57,7 @@ class RefundService:
             order.status = "REFUNDED"
         else:
             refund = Refund(id=new_id("ref"), refund_no=refund_no, payment_id=payment.id,
-                            amount_cents=order.amount_cents, status="ACCEPTED", reason=reason)
+                            amount_cents=amount, status="ACCEPTED", reason=reason)
         session.add(refund)
         session.flush()
         return refund
@@ -77,7 +85,7 @@ class RefundService:
                     Deposit.group_id == group.id, Deposit.status != "REFUNDED"))
                 if remaining == 0:
                     order.status = "REFUNDED"
-            else:
+            elif refund.amount_cents == order.amount_cents:
                 order.status = "REFUNDED"
         elif status == "FAILED" and not deposit:
             order.status = "EXCEPTION"

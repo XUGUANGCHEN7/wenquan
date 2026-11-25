@@ -5,16 +5,30 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.modules.catalog.models import RechargeActivity
+from app.modules.catalog.models import RechargeActivity, RechargeActivityWindow
 from app.modules.tickets.service import TicketService
 
 router = APIRouter(prefix="/api/v1/catalog", tags=["catalog"])
+
+
+@router.get("/business-hours")
+def venue_business_hours(session: Session = Depends(get_db)):
+    from app.modules.catalog.business_hours import business_hours
+
+    return business_hours(session)
 
 
 @router.get("/ticket-prices")
 def ticket_prices(visit_date: date, session: Session = Depends(get_db)):
     adult, child = TicketService.prices(session, visit_date)
     return {"visit_date": visit_date, "adult_cents": adult, "child_cents": child, "currency": "CNY"}
+
+
+@router.get("/ticket-products")
+def ticket_products(session: Session = Depends(get_db)):
+    return [{"day_type": kind, "name": name, "adult_cents": prices[0], "child_cents": prices[1], "valid_days": 30}
+            for kind, name in (("WEEKDAY", "工作日票"), ("HOLIDAY", "节假日票"))
+            for prices in [TicketService.product_prices(session, kind)]]
 
 
 @router.get("/recharge-activities")
@@ -26,6 +40,8 @@ def recharge_activities(session: Session = Depends(get_db)):
         {
             "id": item.id, "name": item.name,
             "principal_cents": item.principal_cents, "gift_cents": item.gift_cents,
+            "starts_on": (window.starts_on if (window := session.get(RechargeActivityWindow, item.id)) else None),
+            "ends_on": (window.ends_on if window else None),
         }
         for item in activities
     ]

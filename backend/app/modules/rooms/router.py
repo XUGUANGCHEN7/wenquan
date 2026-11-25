@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
@@ -10,6 +10,7 @@ from app.core.auth import AuthContext, Role, require_roles
 from app.core.database import get_db
 from app.core.errors import ApiError
 from app.modules.catalog.models import BusinessConfig
+from app.modules.catalog.business_hours import now_beijing
 from app.modules.orders.router import order_dict
 from app.modules.payments.models import Order
 from app.modules.rooms.models import PrivateBooking, RoomUse
@@ -26,11 +27,30 @@ class BookingRequest(BaseModel):
 
 
 def booking_dict(booking: PrivateBooking, order: Order, room_use: RoomUse | None = None) -> dict:
+    issued = order.status == "PAID" and booking.status in ("CONFIRMED", "IN_USE", "COMPLETED")
     return {**order_dict(order), "booking_id": booking.id, "visit_date": booking.visit_date,
+            "ticket_no": f"PV-{booking.id}" if issued else None,
+            "voucher_status": ("USED" if booking.status in ("IN_USE", "COMPLETED") else "UNUSED") if issued else None,
             "slot_indices": booking.slot_indices, "expected_arrival_at": booking.expected_arrival_at,
             "start_at": booking.start_at, "end_at": booking.end_at, "cleaning_end_at": booking.cleaning_end_at,
             "expires_at": booking.expires_at, "booking_status": booking.status,
             "room_number": room_use.room.number if room_use else None}
+
+
+@router.get("/dates")
+def booking_dates(session: Session = Depends(get_db)):
+    """Publish the existing seven-day booking window using real room inventory."""
+    today = now_beijing().date()
+    days = []
+    for offset in range(7):
+        visit_date = today + timedelta(days=offset)
+        available = any(RoomService.availability(session, visit_date, [index]) > 0
+                        for index in range(len(SLOT_TIMES)))
+        days.append({"value": visit_date, "available": available,
+                     "weekday": "周" + "一二三四五六日"[visit_date.weekday()],
+                     "label": "今天" if offset == 0 else "明天" if offset == 1 else
+                              "周" + "一二三四五六日"[visit_date.weekday()]})
+    return {"dates": days}
 
 
 @router.get("/slots")

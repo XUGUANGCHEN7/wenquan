@@ -65,3 +65,15 @@ class AuditEvent(Base):
     reason: Mapped[str] = mapped_column(Text, default="", nullable=False)
     request_id: Mapped[str] = mapped_column(String(64), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, index=True, nullable=False)
+
+
+class RefundApplication(Base):
+    __tablename__ = "refund_applications"
+    order_id: Mapped[str] = mapped_column(ForeignKey("orders.id"), primary_key=True)
+    status: Mapped[str] = mapped_column(String(24), default="PENDING", nullable=False)
+    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    review_reason: Mapped[str] = mapped_column(Text, default="", nullable=False)
+    reviewed_by: Mapped[str | None] = mapped_column(String(96), nullable=True)
+    refund_no: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)

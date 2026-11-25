@@ -1,8 +1,10 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Annotated, Literal
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from app.core.auth import AuthContext, CurrentAuth, OperationsAuth, Role
@@ -36,6 +38,11 @@ def create_app() -> FastAPI:
         version="0.1.0",
         description="Phase-one API. Development payment and device adapters are simulations.",
         lifespan=lifespan,
+    )
+    app.mount(
+        "/media",
+        StaticFiles(directory=Path(__file__).resolve().parents[1] / "media"),
+        name="media",
     )
     app.add_middleware(
         CORSMiddleware,
@@ -80,7 +87,12 @@ def create_app() -> FastAPI:
     def member_profile(member_id: str, auth: CurrentAuth):
         if auth.role != Role.MEMBER or auth.member_id != member_id:
             raise ApiError(403, "RESOURCE_FORBIDDEN", "You can only access your own member profile")
-        return {"member_id": member_id, "nickname": "温泉旅人", "mode": "development"}
+        from app.core.database import SessionLocal
+        from app.modules.identity.models import Member
+        from app.modules.identity.sessions import require_active, profile
+
+        with SessionLocal() as session:
+            return profile(require_active(session.get(Member, member_id)))
 
     @app.get("/api/v1/operations/status", tags=["operations"])
     def operations_status(auth: OperationsAuth):

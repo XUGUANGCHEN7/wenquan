@@ -29,10 +29,18 @@ def seed_development_data(session: Session) -> None:
         "deposit_amount_cents": (10_000, "Development-only deposit; business amount is pending confirmation"),
         "extension_price_cents": (12_000, "Development extension price per configured duration"),
         "extension_minutes": (120, "Development extension duration in minutes"),
+        "ticket_weekday_cents": (2_900, "工作日公共浴池成人票价，单位：分"),
+        "ticket_weekend_cents": (4_900, "周末及节假日公共浴池成人票价，单位：分"),
+        "ticket_child_cents": (2_900, "公共浴池儿童票价，单位：分"),
     }
     for key, (value, description) in defaults.items():
         if session.get(BusinessConfig, key) is None:
             session.add(BusinessConfig(key=key, value=value, description=description))
+    session.flush()
+    for key in ("ticket_weekday_child_cents", "ticket_holiday_child_cents"):
+        if session.get(BusinessConfig, key) is None:
+            session.add(BusinessConfig(key=key, value=session.get(BusinessConfig, "ticket_child_cents").value,
+                                       description="公共浴池分票种儿童价格，单位：分"))
     from app.modules.access.models import Card, Locker
     from app.modules.common import utcnow
     from app.modules.dining.models import MenuItem, Merchant, RoomQrCode

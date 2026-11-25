@@ -6,7 +6,9 @@ import PageHeader from "../components/PageHeader.vue"
 import DataState from "../components/DataState.vue"
 
 interface Config { key: string; value: number; description: string }
-interface Activity { id: string; name: string; principal_cents: number; gift_cents: number; active?: boolean }
+interface BusinessHours { opens_at: string; closes_at: string; rest_today: boolean; business_date: string }
+const businessHours = ref<BusinessHours | null>(null)
+interface Activity { id: string; name: string; principal_cents: number; gift_cents: number; active?: boolean; starts_on?: string | null; ends_on?: string | null }
 interface MenuItem { id: string; name: string; price_cents: number; stock: number | null; available: boolean; description: string }
 interface ConfigMeta { label: string; description: string; money: boolean }
 const configMeta: Record<string, ConfigMeta> = {
@@ -14,6 +16,11 @@ const configMeta: Record<string, ConfigMeta> = {
   deposit_amount_cents: { label: "手牌押金", description: "每枚手牌单独收取的押金，具体金额待业务方确认，单位：元。", money: true },
   extension_price_cents: { label: "加钟价格", description: "每办理一次加钟的收费价格，单位：元。", money: true },
   extension_minutes: { label: "加钟时长", description: "每次加钟延长的时长，单位：分钟。", money: false },
+  ticket_weekday_cents: { label: "工作日门票", description: "公共浴室工作日成人票价，单位：元。", money: true },
+  ticket_weekend_cents: { label: "节假日成人票", description: "周六、周日及后台配置节假日适用，单位：元。", money: true },
+  ticket_weekday_child_cents: { label: "工作日儿童票", description: "非节假日的周一至周五适用，单位：元。", money: true },
+  ticket_holiday_child_cents: { label: "节假日儿童票", description: "周六、周日及后台配置节假日适用，单位：元。", money: true },
+  ticket_child_cents: { label: "旧版日期订单儿童票", description: "兼容原按日期购票；新票种使用各自儿童票价，单位：元。", money: true },
 }
 const configs = ref<Config[]>([])
 const configDrafts = ref<Record<string, string>>({})
@@ -25,7 +32,7 @@ const notice = ref("")
 const visitDate = ref(new Date(Date.now() + 86400000).toISOString().slice(0, 10))
 const adultYuan = ref("29.00")
 const childYuan = ref("29.00")
-const activityForm = ref({ id: "", name: "", principalYuan: "200.00", giftYuan: "20.00", active: true })
+const activityForm = ref({ id: "", name: "", principalYuan: "200.00", giftYuan: "20.00", active: true, startsOn: "", endsOn: "" })
 const selectedActivityId = ref("")
 const menuItemId = ref("")
 const menuDraft = ref({ priceYuan: "0.00", stock: 0, available: true, description: "" })
@@ -40,6 +47,10 @@ function configLabel(item: Config) {
 }
 function configDescription(item: Config) {
   return configMeta[item.key]?.description ?? "未登记说明的配置项，请核对后再修改。"
+}
+function activityWindow(item: Activity) {
+  if (!item.starts_on) return ""
+  return ` · ${item.starts_on} 至 ${item.ends_on ?? "不设结束"}`
 }
 function syncConfigDrafts() {
   configDrafts.value = Object.fromEntries(configs.value.map((item) => [
@@ -57,10 +68,12 @@ function normalizeConfigDraft(item: Config) {
 async function load() {
   loading.value = true; error.value = ""
   try {
-    const [configsData, activitiesData, menuData] = await Promise.all([
+    const [configsData, activitiesData, menuData, hoursData] = await Promise.all([
       api.get<Config[]>("/admin/config"), api.get<Activity[]>("/catalog/recharge-activities"), api.get<MenuItem[]>("/dining/menu"),
+      api.get<BusinessHours>("/catalog/business-hours"),
     ])
-    configs.value = configsData; activities.value = activitiesData; menu.value = menuData; syncConfigDrafts()
+    businessHours.value = hoursData
+    configs.value = configsData.filter((item) => !item.key.startsWith("business_")); activities.value = activitiesData; menu.value = menuData; syncConfigDrafts()
     if (!menuItemId.value && menu.value.length) selectMenu(menu.value[0].id)
   } catch (cause) { error.value = cause instanceof Error ? cause.message : "配置读取失败" }
   finally { loading.value = false }
@@ -68,6 +81,15 @@ async function load() {
 
 function showError(cause: unknown, fallback = "保存失败") {
   error.value = cause instanceof Error ? cause.message : fallback
+}
+
+async function saveBusinessHours() {
+  if (!businessHours.value) return
+  error.value = ""; notice.value = ""
+  try {
+    businessHours.value = await api.post<BusinessHours>("/admin/business-hours", businessHours.value)
+    notice.value = "营业时间与今日休息设置已保存，小程序首页将在一分钟内同步"
+  } catch (cause) { showError(cause) }
 }
 
 async function saveConfig(item: Config) {
@@ -100,7 +122,8 @@ function selectActivity(id: string) {
   activityForm.value = found ? {
     id: found.id, name: found.name, principalYuan: formatMoney(found.principal_cents),
     giftYuan: formatMoney(found.gift_cents), active: found.active ?? true,
-  } : { id: "", name: "", principalYuan: "200.00", giftYuan: "20.00", active: true }
+    startsOn: found.starts_on ?? "", endsOn: found.ends_on ?? "",
+  } : { id: "", name: "", principalYuan: "200.00", giftYuan: "20.00", active: true, startsOn: "", endsOn: "" }
 }
 async function saveActivity() {
   error.value = ""; notice.value = ""
@@ -113,6 +136,7 @@ async function saveActivity() {
     const result = await api.post<Activity>("/admin/recharge-activities", {
       id: activityForm.value.id || null, name: activityForm.value.name.trim(),
       principal_cents: principalCents, gift_cents: giftCents, active: activityForm.value.active,
+      starts_on: activityForm.value.startsOn || null, ends_on: activityForm.value.endsOn || null,
     })
     notice.value = `充值活动 ${result.name} 已保存`; await load()
   } catch (cause) { showError(cause) }
@@ -148,15 +172,24 @@ onMounted(load)
   <p v-if="notice" class="success-note">{{ notice }}</p>
   <DataState :loading="loading" :error="error" :empty="false" @retry="load">
     <div class="settings-grid">
+      <section v-if="businessHours" class="panel"><div class="panel-head"><h2>温泉营业时间</h2></div>
+        <form class="form-stack" @submit.prevent="saveBusinessHours">
+          <div class="form-row"><label>开始时间（北京时间）<input v-model="businessHours.opens_at" type="time" required /></label><label>结束时间（北京时间）<input v-model="businessHours.closes_at" type="time" required /></label></div>
+          <label class="check-row"><input v-model="businessHours.rest_today" type="checkbox" />今日休息（{{ businessHours.business_date }}）</label>
+          <p class="hint">休息设置仅当天有效，次日自动恢复按营业时间判断；结束时间须晚于开始时间。</p>
+          <button class="button secondary">保存营业设置</button>
+        </form>
+      </section>
       <section class="panel"><div class="panel-head"><h2>基础价格与时长</h2></div>
         <div v-for="item in configs" :key="item.key" class="config-row"><div><strong>{{ configLabel(item) }}</strong><small>{{ configDescription(item) }}</small></div><input v-if="isMoneyConfig(item)" v-model="configDrafts[item.key]" type="text" inputmode="decimal" placeholder="0.00" aria-label="金额（元）" @blur="normalizeConfigDraft(item)" /><input v-else v-model="configDrafts[item.key]" type="number" min="0" step="1" aria-label="整数" /><button class="mini-button" @click="saveConfig(item)">保存</button></div>
       </section>
-      <section class="panel"><div class="panel-head"><h2>节假日票种价格</h2></div>
+      <section class="panel"><div class="panel-head"><h2>节假日日历与旧版日期票价</h2></div>
+        <p class="hint">此处登记节假日日期。新购公共票使用上方工作日、节假日成人及儿童四项票价；单独日期的价格用于原按日期购票订单。</p>
         <form class="form-stack" @submit.prevent="savePrice"><label>日期<input v-model="visitDate" type="date" /></label><div class="form-row"><label>成人票价（元）<input v-model="adultYuan" type="text" inputmode="decimal" placeholder="0.00" @blur="adultYuan = normalizeYuan(adultYuan)" /></label><label>儿童票价（元）<input v-model="childYuan" type="text" inputmode="decimal" placeholder="0.00" @blur="childYuan = normalizeYuan(childYuan)" /></label></div><button class="button secondary">保存当日规则</button></form>
       </section>
       <section class="panel"><div class="panel-head"><h2>充值活动（充本金赠余额）</h2></div>
-        <select :value="selectedActivityId" @change="selectActivity(($event.target as HTMLSelectElement).value)"><option value="">新建活动</option><option v-for="item in activities" :key="item.id" :value="item.id">{{ item.name }} · 本金 ¥{{ formatMoney(item.principal_cents) }}，赠 ¥{{ formatMoney(item.gift_cents) }}</option></select>
-        <form class="form-stack compact-form" @submit.prevent="saveActivity"><label>活动名称<input v-model="activityForm.name" /></label><div class="form-row"><label>本金（元）<input v-model="activityForm.principalYuan" type="text" inputmode="decimal" placeholder="0.00" @blur="activityForm.principalYuan = normalizeYuan(activityForm.principalYuan)" /></label><label>赠送余额（元）<input v-model="activityForm.giftYuan" type="text" inputmode="decimal" placeholder="0.00" @blur="activityForm.giftYuan = normalizeYuan(activityForm.giftYuan)" /></label></div><label class="check-row"><input v-model="activityForm.active" type="checkbox" />启用活动</label><button class="button secondary">保存充值活动</button></form>
+        <select :value="selectedActivityId" @change="selectActivity(($event.target as HTMLSelectElement).value)"><option value="">新建活动</option><option v-for="item in activities" :key="item.id" :value="item.id">{{ item.name }} · 本金 ¥{{ formatMoney(item.principal_cents) }}，赠 ¥{{ formatMoney(item.gift_cents) }}{{ activityWindow(item) }}</option></select>
+        <form class="form-stack compact-form" @submit.prevent="saveActivity"><label>活动名称<input v-model="activityForm.name" /></label><div class="form-row"><label>本金（元）<input v-model="activityForm.principalYuan" type="text" inputmode="decimal" placeholder="0.00" @blur="activityForm.principalYuan = normalizeYuan(activityForm.principalYuan)" /></label><label>赠送余额（元）<input v-model="activityForm.giftYuan" type="text" inputmode="decimal" placeholder="0.00" @blur="activityForm.giftYuan = normalizeYuan(activityForm.giftYuan)" /></label></div><div class="form-row"><label>开始日期（可选）<input v-model="activityForm.startsOn" type="date" /></label><label>结束日期（可选）<input v-model="activityForm.endsOn" type="date" /></label></div><label class="check-row"><input v-model="activityForm.active" type="checkbox" />启用活动</label><button class="button secondary">保存充值活动</button></form>
       </section>
       <section class="panel"><div class="panel-head"><h2>菜单价格与库存</h2></div>
         <select :value="menuItemId" @change="selectMenu(($event.target as HTMLSelectElement).value)"><option v-for="item in menu" :key="item.id" :value="item.id">{{ item.name }} · ¥{{ formatMoney(item.price_cents) }}</option></select>
